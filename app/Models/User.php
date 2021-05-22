@@ -21,6 +21,10 @@ class User extends Authenticatable
 
     /** Roles */
     const ROLE_ADMIN = 'administrator';
+    const ROLE_SUPPLIER_MANAGER = 'supplier_manager';
+    const ROLE_RIVAL_MANAGER = 'rival_manager';
+    const ROLE_SELLER = 'seller';
+    const ROLE_BUYER = 'buyer';
 
     /**
      * The attributes that are mass assignable.
@@ -66,6 +70,46 @@ class User extends Authenticatable
     }
 
     /**
+     * Is supplier manager?
+     *
+     * @return bool
+     */
+    public function isSupplierManager()
+    {
+        return $this->role === self::ROLE_SUPPLIER_MANAGER;
+    }
+
+    /**
+     * Is rival manager?
+     *
+     * @return bool
+     */
+    public function isRivalManager()
+    {
+        return $this->role === self::ROLE_RIVAL_MANAGER;
+    }
+
+    /**
+     * Is seller?
+     *
+     * @return bool
+     */
+    public function isSeller()
+    {
+        return $this->role === self::ROLE_SELLER;
+    }
+
+    /**
+     * Is buyer?
+     *
+     * @return bool
+     */
+    public function isBuyer()
+    {
+        return $this->role === self::ROLE_BUYER;
+    }
+
+    /**
      * Exclude me from select
      *
      * @param Builder $query
@@ -85,6 +129,10 @@ class User extends Authenticatable
     {
         return [
             self::ROLE_ADMIN => __('role.' . self::ROLE_ADMIN),
+            // self::ROLE_SUPPLIER_MANAGER => __('role.' . self::ROLE_SUPPLIER_MANAGER),
+            // self::ROLE_RIVAL_MANAGER => __('role.' . self::ROLE_RIVAL_MANAGER),
+            self::ROLE_SELLER => __('role.' . self::ROLE_SELLER),
+            self::ROLE_BUYER => __('role.' . self::ROLE_BUYER),
         ];
     }
 }
