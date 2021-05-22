@@ -1,0 +1,84 @@
+body {
+    background-color: #9FBBE5;
+}
+
+.navbar-light {
+    background-color: #1A3660;
+
+    .navbar-nav {
+        .nav-link {
+            //color: #000;
+            color: #ffffff;
+
+            &:hover, &:focus {
+                color: #fff;
+            }
+        }
+
+        .show {
+            .nav-link {
+                //color: #000;
+                color: #ffffff;
+            }
+        }
+    }
+
+    .navbar-brand {
+        //color: #000;
+        color: #ffffff;
+
+        &:hover, &:focus {
+            color: #fff;
+        }
+    }
+
+    .dropdown-menu {
+        background-color: #275190;
+        a {
+            color: #ffffff;
+        }
+    }
+
+    .dropdown-item {
+        &:hover, &:focus {
+            color: #ffffff;
+            background-color: #275190;
+        }
+    }
+}
+
+.card {
+    .card-header {
+        background-color: #1A3660;
+        color: #ffffff;
+    }
+
+    .card-body {
+        background-color: #fafafa;
+    }
+
+    .page-link {
+        color: #1A3660;
+        border-color: #1A3660;
+    }
+    .page-item.active {
+        .page-link {
+            background-color: #1A3660;
+            border-color: #1A3660;
+        }
+    }
+}
+
+.date-picker[readonly] {
+    background-color: #fff;
+}
+.pointer {
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #1A3660;
+    &:focus, &:active, &:hover {
+        background-color: #1A3660;
+    }
+}
