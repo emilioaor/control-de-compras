@@ -20,6 +20,7 @@ class CreatePurchaseMovementsTable extends Migration
             $table->foreignId('purchase_request_id')->nullable()->constrained('purchase_requests');
             $table->integer('qty');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

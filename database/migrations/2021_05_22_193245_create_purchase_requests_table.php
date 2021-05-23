@@ -24,6 +24,7 @@ class CreatePurchaseRequestsTable extends Migration
             $table->integer('refused')->nullable();
             $table->dateTime('processed_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

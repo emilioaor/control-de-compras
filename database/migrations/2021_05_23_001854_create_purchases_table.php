@@ -22,6 +22,7 @@ class CreatePurchasesTable extends Migration
             $table->integer('qty');
             $table->dateTime('received_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
