@@ -31,11 +31,11 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::group([
-        'prefix' => 'manager',
+        'prefix' => 'seller',
         'middleware' => 'role',
-        'roles' => ['administrator', 'inventory_manager']
+        'roles' => ['administrator', 'seller']
     ], function () {
-        // Inventory manager
+        // Seller
     });
 
     Route::group([
