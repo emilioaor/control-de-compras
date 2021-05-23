@@ -155,7 +155,11 @@ return [
         'password_confirmation' => 'Password confirmation',
         'currentPassword' => 'Current password',
         'newPassword' => 'New password',
-        'newPasswordConfirmation' => 'New password confirmation'
+        'newPasswordConfirmation' => 'New password confirmation',
+        'upc' => 'UPC',
+        'model' => 'Model',
+        'description' => 'Description',
+        'createdAt' => 'Created at'
     ],
 
 ];

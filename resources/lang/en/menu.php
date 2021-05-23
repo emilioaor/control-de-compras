@@ -5,6 +5,7 @@ return [
     'addNew' => 'Add new',
     'list' => 'List',
     'users' => 'Users',
-    'security' => 'Security'
+    'security' => 'Security',
+    'products' => 'Products'
 
 ];

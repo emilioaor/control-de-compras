@@ -16,6 +16,21 @@
                         ]
                     ]
                 ])
+
+            @include('layouts.navbar-item', [
+                    'label' => __('menu.products'),
+                    'show' => Auth::user()->isAdmin(),
+                    'items' => [
+                        [
+                            'label' => __('menu.addNew'),
+                            'route' => route('product.create'),
+                        ],
+                        [
+                            'label' => __('menu.list'),
+                            'route' => route('product.index'),
+                        ]
+                    ]
+                ])
         @endauth
     </ul>
 
