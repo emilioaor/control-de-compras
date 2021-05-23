@@ -17,7 +17,7 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->uuid('uuid');
             $table->string('upc', 20)->unique();
-            $table->string('model', 30);
+            $table->string('model', 30)->index();
             $table->string('description');
             $table->timestamps();
         });
