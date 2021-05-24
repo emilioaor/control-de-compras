@@ -38,6 +38,7 @@ Route::group(['middleware' => 'auth'], function () {
         'roles' => ['administrator', 'seller']
     ], function () {
         // Seller
+        Route::resource('purchase-request', \App\Http\Controllers\PurchaseRequestController::class);
     });
 
     Route::group([
@@ -48,7 +49,9 @@ Route::group(['middleware' => 'auth'], function () {
         // Everybody
         Route::get('user/config', [\App\Http\Controllers\UserController::class, 'config'])->name('user.config');
         Route::put('user/config', [\App\Http\Controllers\UserController::class, 'updateConfig'])->name('user.updateConfig');
-
+        Route::get('product', [\App\Http\Controllers\ProductController::class, 'index']);
+        Route::get('product/models', [\App\Http\Controllers\ProductController::class, 'models']);
+        Route::get('product/models/{model}', [\App\Http\Controllers\ProductController::class, 'byModel']);
     });
 
 });

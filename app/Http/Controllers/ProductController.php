@@ -116,4 +116,30 @@ class ProductController extends Controller
 
         return response()->json(['success' => true, 'data' => $product]);
     }
+
+    /**
+     * Get models
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function models(Request $request)
+    {
+        $models = Product::query()->select('model')->model($request->search)->groupBy('model')->paginate();
+
+        return response()->json(['success' => true, 'data' => $models]);
+    }
+
+    /**
+     * Get products by model
+     *
+     * @param $model
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function byModel($model)
+    {
+        $products = Product::query()->where('model', $model)->get();
+
+        return response()->json(['success' => true, 'data' => $products]);
+    }
 }

@@ -174,20 +174,3 @@
         }
     }
 </script>
-
-<style lang="scss">
-    .serial {
-        display: inline-block;
-        background-color: #6c757d;
-        color: #fff;
-        padding: .3rem;
-        border-radius: 5px;
-        font-size: 12px;
-        margin: .3rem;
-    }
-
-    #newSerial {
-        resize: none;
-        height: 7.5rem;
-    }
-</style>

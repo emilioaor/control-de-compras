@@ -22,4 +22,10 @@ return [
     'close' => 'Close',
     'at' => 'At',
     'new' => 'New',
+    'addMore' => 'Add more',
+    'productForThisModel' => ':attribute products for this model',
+    'detail' => 'Detail',
+    'hide' => 'Hide',
+    'hasErrors' => 'Has errors',
+    'productsByModel' => 'Products by model can not be 0',
 ];

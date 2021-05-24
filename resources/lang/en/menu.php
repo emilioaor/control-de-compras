@@ -6,6 +6,7 @@ return [
     'list' => 'List',
     'users' => 'Users',
     'security' => 'Security',
-    'products' => 'Products'
+    'products' => 'Products',
+    'purchaseRequests' => 'Purchase requests',
 
 ];

@@ -24,7 +24,7 @@
                 <button
                         type="button"
                         :id="'open' + modalId"
-                        class="btn btn-secondary"
+                        class="btn btn-primary"
                         data-toggle="modal"
                         :data-target="'#' + modalId"
                         @click="filter()"

@@ -159,7 +159,14 @@ return [
         'upc' => 'UPC',
         'model' => 'Model',
         'description' => 'Description',
-        'createdAt' => 'Created at'
+        'createdAt' => 'Created at',
+        'qty' => 'QTY',
+        'approved' => 'Approved',
+        'refused' => 'Refused',
+        'status' => 'Status',
+        'product' => 'Product',
+        'products' => 'Products',
+        'seller' => 'Seller'
     ],
 
 ];

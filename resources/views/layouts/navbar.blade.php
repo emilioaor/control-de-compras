@@ -31,6 +31,21 @@
                         ]
                     ]
                 ])
+
+            @include('layouts.navbar-item', [
+                    'label' => __('menu.purchaseRequests'),
+                    'show' => Auth::user()->isAdmin() || Auth::user()->isSeller(),
+                    'items' => [
+                        [
+                            'label' => __('menu.addNew'),
+                            'route' => route('purchase-request.create'),
+                        ],
+                        [
+                            'label' => __('menu.list'),
+                            'route' => route('purchase-request.index'),
+                        ]
+                    ]
+                ])
         @endauth
     </ul>
 

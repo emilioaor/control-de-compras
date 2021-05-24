@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contract\SearchTrait;
 use App\Contract\UuidGeneratorTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -37,5 +38,21 @@ class Product extends Model
     public function purchases()
     {
         return $this->hasMany(Purchase::class);
+    }
+
+    /**
+     * Scope model
+     *
+     * @param Builder $query
+     * @param $model
+     * @return Builder
+     */
+    public function scopeModel(Builder $query, $model)
+    {
+        if ($model) {
+            $query->where('model', 'like', "%{$model}%");
+        }
+
+        return $query;
     }
 }
