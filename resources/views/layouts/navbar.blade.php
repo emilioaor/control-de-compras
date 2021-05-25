@@ -68,7 +68,7 @@
                         ],
                         [
                             'label' => __('menu.inventory'),
-                            'route' => route('purchase.index'),
+                            'route' => route('buyer.inventory.index'),
                         ]
                     ]
                 ])

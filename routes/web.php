@@ -49,6 +49,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Buyer
         Route::resource('purchase', \App\Http\Controllers\PurchaseController::class);
         Route::get('purchase-request', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('buyer.purchase-request.index');
+        Route::get('inventory', [\App\Http\Controllers\InventoryController::class, 'index'])->name('buyer.inventory.index');
     });
 
     Route::group([
