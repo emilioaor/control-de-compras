@@ -18,4 +18,24 @@ class PurchaseMovement extends Model
     protected $fillable = ['purchase_id', 'purchase_request_id', 'qty'];
 
     protected $search_fields = ['qty'];
+
+    /**
+     * Purchase
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function purchase()
+    {
+        return $this->belongsTo(Purchase::class);
+    }
+
+    /**
+     * Purchase request
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function purchaseRequest()
+    {
+        return $this->belongsTo(PurchaseRequest::class)->withTrashed();
+    }
 }

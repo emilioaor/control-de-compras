@@ -42,6 +42,16 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::group([
+        'prefix' => 'buyer',
+        'middleware' => 'role',
+        'roles' => ['administrator', 'buyer']
+    ], function () {
+        // Buyer
+        Route::resource('purchase', \App\Http\Controllers\PurchaseController::class);
+        Route::get('purchase-request', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('buyer.purchase-request.index');
+    });
+
+    Route::group([
         'prefix' => 'buy',
         'middleware' => 'role',
         'roles' => array_keys(\App\Models\User::rolesAvailable())

@@ -3,12 +3,22 @@
         <div class="techland-form">
             <div class="card">
                 <div class="card-header">
-                    <div v-if="editData">
-                        <i class="fa fa-edit"></i> {{ t('form.edit') }} {{ t('menu.purchaseRequests') }}
-                    </div>
-                    <div v-else>
-                        <i class="fa fa-plus"></i> {{ t('form.add') }} {{ t('menu.purchaseRequests') }}
-                    </div>
+                    <template v-if="purchaseType === 'purchase-request'">
+                        <div v-if="editData">
+                            <i class="fa fa-edit"></i> {{ t('form.edit') }} {{ t('menu.purchaseRequests') }}
+                        </div>
+                        <div v-else>
+                            <i class="fa fa-plus"></i> {{ t('form.add') }} {{ t('menu.purchaseRequests') }}
+                        </div>
+                    </template>
+                    <template v-if="purchaseType === 'purchase'">
+                        <div v-if="editData">
+                            <i class="fa fa-edit"></i> {{ t('form.edit') }} {{ t('menu.purchases') }}
+                        </div>
+                        <div v-else>
+                            <i class="fa fa-plus"></i> {{ t('form.add') }} {{ t('menu.purchases') }}
+                        </div>
+                    </template>
                 </div>
                 <div class="card-body">
 
@@ -47,7 +57,7 @@
 
                             <template v-else>
 
-                                <div class="row mb-3" v-if="user.role === 'administrator'">
+                                <div class="row mb-3" v-if="user.role === 'administrator' && purchaseType === 'purchase-request'">
                                     <div class="col-sm-6 col-md-4">
                                         <label>{{ t('validation.attributes.seller') }}</label>
 
@@ -60,6 +70,23 @@
                                             data-vv-rules="required"
                                         >
                                             <option v-for="seller in sellers" :value="seller.id">{{ seller.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3" v-if="user.role === 'administrator' && purchaseType === 'purchase'">
+                                    <div class="col-sm-6 col-md-4">
+                                        <label>{{ t('validation.attributes.buyer') }}</label>
+
+                                        <select
+                                            class="form-control"
+                                            :class="{'is-invalid': errors.has('buyer' + i)}"
+                                            :name="'buyer' + i"
+                                            v-model="pr.buyer_id"
+                                            v-validate
+                                            data-vv-rules="required"
+                                        >
+                                            <option v-for="buyer in buyers" :value="buyer.id">{{ buyer.name }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -160,7 +187,20 @@
             },
             sellers: {
                 type: Array,
-                required: true
+                required: false,
+                default: () => []
+            },
+            buyers: {
+                type: Array,
+                required: false,
+                default: () => []
+            },
+            purchaseType: {
+                type: String,
+                required: true,
+                validator: value => {
+                    return value === 'purchase' || value === 'purchase-request'
+                }
             }
         },
 
@@ -192,10 +232,20 @@
 
             sendForm() {
 
-                const apiService = this.editData ?
-                    ApiService.put('/seller/purchase-request/' + this.form.uuid, this.form) :
-                    ApiService.post('/seller/purchase-request', this.form)
-                ;
+                let apiService;
+
+                if (this.purchaseType === 'purchase-request') {
+
+                    apiService = this.editData ?
+                        ApiService.put('/seller/purchase-request/' + this.form.uuid, this.form) :
+                        ApiService.post('/seller/purchase-request', this.form);
+
+                } else if (this.purchaseType === 'purchase') {
+
+                    apiService = this.editData ?
+                        ApiService.put('/buyer/purchase/' + this.form.uuid, this.form) :
+                        ApiService.post('/buyer/purchase', this.form);
+                }
 
                 this.loading = true;
 
@@ -222,6 +272,7 @@
                     model: null,
                     show: true,
                     seller_id: null,
+                    buyer_id: null,
                     products: []
                 })
             },

@@ -16,11 +16,9 @@ class CreatePurchasesTable extends Migration
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
-            $table->enum('status', ['purchased', 'received']);
             $table->foreignId('buyer_id')->constrained('users');
             $table->foreignId('product_id')->constrained('products');
             $table->integer('qty');
-            $table->dateTime('received_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

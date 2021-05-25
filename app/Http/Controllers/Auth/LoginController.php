@@ -46,8 +46,12 @@ class LoginController extends Controller
      */
     public function redirectPath()
     {
-        if (! Auth::user()->isAdmin()) {
+        if (Auth::user()->isSeller()) {
             return route('purchase-request.index');
+        }
+
+        if (Auth::user()->isBuyer()) {
+            return route('buyer.purchase-request.index');
         }
 
         return route('user.index');

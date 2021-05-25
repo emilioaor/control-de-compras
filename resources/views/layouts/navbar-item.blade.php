@@ -6,9 +6,11 @@
 
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
             @foreach($items as $item)
-                <a class="dropdown-item" href="{{ $item['route'] }}">
-                    {{ $item['label'] }}
-                </a>
+                @if(! isset($item['show']) || $item['show'])
+                    <a class="dropdown-item" href="{{ $item['route'] }}">
+                        {{ $item['label'] }}
+                    </a>
+                @endif
             @endforeach
         </div>
     </li>

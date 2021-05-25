@@ -34,15 +34,41 @@
 
             @include('layouts.navbar-item', [
                     'label' => __('menu.purchaseRequests'),
-                    'show' => Auth::user()->isAdmin() || Auth::user()->isSeller(),
+                    'show' => Auth::user()->isAdmin() || Auth::user()->isSeller() || Auth::user()->isBuyer(),
                     'items' => [
                         [
+                            'show' => Auth::user()->isAdmin() || Auth::user()->isSeller(),
                             'label' => __('menu.addNew'),
                             'route' => route('purchase-request.create'),
                         ],
                         [
+                            'show' => Auth::user()->isAdmin() || Auth::user()->isSeller(),
                             'label' => __('menu.list'),
                             'route' => route('purchase-request.index'),
+                        ],
+                        [
+                            'show' => Auth::user()->isBuyer(),
+                            'label' => __('menu.list'),
+                            'route' => route('buyer.purchase-request.index'),
+                        ]
+                    ]
+                ])
+
+            @include('layouts.navbar-item', [
+                    'label' => __('menu.purchases'),
+                    'show' => Auth::user()->isAdmin() || Auth::user()->isBuyer(),
+                    'items' => [
+                        [
+                            'label' => __('menu.addNew'),
+                            'route' => route('purchase.create'),
+                        ],
+                        [
+                            'label' => __('menu.list'),
+                            'route' => route('purchase.index'),
+                        ],
+                        [
+                            'label' => __('menu.inventory'),
+                            'route' => route('purchase.index'),
                         ]
                     ]
                 ])

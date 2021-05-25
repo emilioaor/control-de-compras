@@ -71,7 +71,7 @@ class PurchaseRequest extends Model
      */
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     /**
@@ -81,7 +81,17 @@ class PurchaseRequest extends Model
      */
     public function seller()
     {
-        return $this->belongsTo(User::class, 'seller_id');
+        return $this->belongsTo(User::class, 'seller_id')->withTrashed();
+    }
+
+    /**
+     * Purchase movements
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function purchaseMovements()
+    {
+        return $this->hasMany(PurchaseMovement::class);
     }
 
     /**
@@ -92,7 +102,7 @@ class PurchaseRequest extends Model
      */
     public function scopeMy(Builder $query)
     {
-        if (! Auth::user()->isAdmin()) {
+        if (Auth::user()->isSeller()) {
             $query->where('seller_id', Auth::user()->id);
         }
 

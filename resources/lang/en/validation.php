@@ -166,7 +166,8 @@ return [
         'status' => 'Status',
         'product' => 'Product',
         'products' => 'Products',
-        'seller' => 'Seller'
+        'seller' => 'Seller',
+        'buyer' => 'Buyer',
     ],
 
 ];

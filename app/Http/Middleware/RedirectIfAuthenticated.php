@@ -23,10 +23,28 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect()->route('user.index');
+                return redirect($this->redirectPath());
             }
         }
 
         return $next($request);
+    }
+
+    /**
+     * Redirect path
+     *
+     * @return string
+     */
+    public function redirectPath()
+    {
+        if (Auth::user()->isSeller()) {
+            return route('purchase-request.index');
+        }
+
+        if (Auth::user()->isBuyer()) {
+            return route('buyer.purchase-request.index');
+        }
+
+        return route('user.index');
     }
 }

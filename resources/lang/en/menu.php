@@ -8,5 +8,7 @@ return [
     'security' => 'Security',
     'products' => 'Products',
     'purchaseRequests' => 'Purchase requests',
+    'purchases' => 'Purchases',
+    'inventory' => 'Inventory',
 
 ];
