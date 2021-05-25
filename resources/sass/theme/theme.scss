@@ -1,9 +1,9 @@
 body {
-    background-color: #9FBBE5;
+    background-color: #34495e;
 }
 
 .navbar-light {
-    background-color: #1A3660;
+    background-color: #2980b9;
 
     .navbar-nav {
         .nav-link {
@@ -33,7 +33,7 @@ body {
     }
 
     .dropdown-menu {
-        background-color: #275190;
+        background-color: #216fa3;
         a {
             color: #ffffff;
         }
@@ -42,14 +42,14 @@ body {
     .dropdown-item {
         &:hover, &:focus {
             color: #ffffff;
-            background-color: #275190;
+            background-color: #216fa3;
         }
     }
 }
 
 .card {
     .card-header {
-        background-color: #1A3660;
+        background-color: #2980b9;
         color: #ffffff;
     }
 
@@ -58,13 +58,13 @@ body {
     }
 
     .page-link {
-        color: #1A3660;
-        border-color: #1A3660;
+        color: #2980b9;
+        border-color: #2980b9;
     }
     .page-item.active {
         .page-link {
-            background-color: #1A3660;
-            border-color: #1A3660;
+            background-color: #2980b9;
+            border-color: #2980b9;
         }
     }
 }
@@ -77,8 +77,8 @@ body {
 }
 
 .btn-primary {
-    background-color: #1A3660;
+    background-color: #2980b9;
     &:focus, &:active, &:hover {
-        background-color: #1A3660;
+        background-color: #2980b9;
     }
 }
