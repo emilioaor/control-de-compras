@@ -69,6 +69,10 @@
                         [
                             'label' => __('menu.inventory'),
                             'route' => route('buyer.inventory.index'),
+                        ],
+                        [
+                            'label' => __('menu.inventoryDistribution'),
+                            'route' => route('buyer.inventory.distribution'),
                         ]
                     ]
                 ])

@@ -10,5 +10,6 @@ return [
     'purchaseRequests' => 'Purchase requests',
     'purchases' => 'Purchases',
     'inventory' => 'Inventory',
+    'inventoryDistribution' => 'Inventory distribution',
 
 ];

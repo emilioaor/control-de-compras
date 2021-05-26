@@ -41,6 +41,16 @@ class Product extends Model
     }
 
     /**
+     * Products with same model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sameModel()
+    {
+        return $this->hasMany(self::class, 'model', 'model');
+    }
+
+    /**
      * Scope model
      *
      * @param Builder $query

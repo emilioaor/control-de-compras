@@ -168,6 +168,8 @@ return [
         'products' => 'Products',
         'seller' => 'Seller',
         'buyer' => 'Buyer',
+        'ordered' => 'Ordered',
+        'available' => 'Available',
     ],
 
 ];
