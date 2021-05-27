@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 
 class PurchaseRequest extends Model
 {
@@ -17,51 +16,18 @@ class PurchaseRequest extends Model
     use UuidGeneratorTrait;
     use SearchTrait;
 
-    /** Status */
-    const STATUS_PENDING = 'pending';
-    const STATUS_PROCESSED = 'processed';
+    protected $fillable = ['product_id', 'qty', 'approved', 'purchase_request_group_id'];
 
-    protected $fillable = ['product_id', 'qty', 'approved', 'refused', 'seller_id'];
-
-    protected $search_fields= ['status', 'products.model', 'products.description'];
-
-    protected $dates = ['processed_at'];
+    protected $search_fields= ['products.model', 'products.description'];
 
     /**
-     * PurchaseRequest constructor.
-     * @param array $attributes
-     */
-    public function __construct(array $attributes = [])
-    {
-        if (! $this->id) {
-            $this->status = self::STATUS_PENDING;
-
-            if (Auth::check() && Auth::user()->isSeller()) {
-               $attributes['seller_id'] = Auth::user()->id;
-            }
-        }
-
-        parent::__construct($attributes);
-    }
-
-    /**
-     * Is pending?
+     * Purchase request group
      *
-     * @return bool
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function isPending()
+    public function purchaseRequestGroup()
     {
-        return $this->status === self::STATUS_PENDING;
-    }
-
-    /**
-     * Is processed?
-     *
-     * @return bool
-     */
-    public function isProcessed()
-    {
-        return $this->status === self::STATUS_PROCESSED;
+        return $this->belongsTo(PurchaseRequestGroup::class)->withTrashed();
     }
 
     /**
@@ -72,41 +38,6 @@ class PurchaseRequest extends Model
     public function product()
     {
         return $this->belongsTo(Product::class)->withTrashed();
-    }
-
-    /**
-     * Seller
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function seller()
-    {
-        return $this->belongsTo(User::class, 'seller_id')->withTrashed();
-    }
-
-    /**
-     * Purchase movements
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function purchaseMovements()
-    {
-        return $this->hasMany(PurchaseMovement::class);
-    }
-
-    /**
-     * My purchase requests
-     *
-     * @param Builder $query
-     * @return Builder
-     */
-    public function scopeMy(Builder $query)
-    {
-        if (Auth::user()->isSeller()) {
-            $query->where('seller_id', Auth::user()->id);
-        }
-
-        return $query;
     }
 
     /**

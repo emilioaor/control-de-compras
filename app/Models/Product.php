@@ -41,6 +41,16 @@ class Product extends Model
     }
 
     /**
+     * Purchase movements
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function purchaseMovements()
+    {
+        return $this->hasMany(PurchaseMovement::class);
+    }
+
+    /**
      * Products with same model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

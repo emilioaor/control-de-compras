@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
+use App\Models\PurchaseGroup;
 use App\Models\PurchaseMovement;
 use App\Models\User;
 use App\Service\AlertService;
@@ -19,11 +20,11 @@ class PurchaseController extends Controller
      */
     public function index(Request $request)
     {
-        $purchases = Purchase::query()
+        $purchases = PurchaseGroup::query()
             ->search($request->search)
             ->my()
             ->latest()
-            ->with(['product', 'buyer'])
+            ->with(['purchases.product', 'buyer'])
             ->paginate()
         ;
 
@@ -52,20 +53,24 @@ class PurchaseController extends Controller
     {
         DB::beginTransaction();
 
+        $purchaseGroup = new PurchaseGroup($request->all());
+        $purchaseGroup->save();
+
         foreach ($request->purchaseRequests as $current) {
             foreach ($current['products'] as $product) {
 
                 if ($product['qty'] > 0) {
 
                     $purchase = new Purchase([
+                        'purchase_group_id' => $purchaseGroup->id,
                         'product_id' => $product['id'],
-                        'buyer_id' => $current['buyer_id'],
                         'qty' => $product['qty']
                     ]);
                     $purchase->save();
 
                     $purchaseMovement = new PurchaseMovement();
-                    $purchaseMovement->purchase_id = $purchase->id;
+                    $purchaseMovement->purchase_group_id = $purchaseGroup->id;
+                    $purchaseMovement->product_id = $product['id'];
                     $purchaseMovement->qty = $product['qty'];
                     $purchaseMovement->save();
                 }

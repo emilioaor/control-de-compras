@@ -17,34 +17,18 @@ class Purchase extends Model
     use UuidGeneratorTrait;
     use SearchTrait;
 
-    protected $fillable = ['product_id', 'qty', 'buyer_id'];
+    protected $fillable = ['product_id', 'qty', 'purchase_group_id'];
 
-    protected $search_fields= ['products.model', 'products.description'];
-
-    /**
-     * Purchase constructor.
-     * @param array $attributes
-     */
-    public function __construct(array $attributes = [])
-    {
-        if (! $this->id) {
-
-            if (Auth::check() && Auth::user()->isBuyer()) {
-                $attributes['buyer_id'] = Auth::user()->id;
-            }
-        }
-
-        parent::__construct($attributes);
-    }
+    protected $search_fields= ['status', 'p.model', 'p.description'];
 
     /**
-     * Buyer
+     * Purchase group
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function buyer()
+    public function purchaseGroup()
     {
-        return $this->belongsTo(User::class, 'buyer_id')->withTrashed();
+        return $this->belongsTo(PurchaseGroup::class)->withTrashed();
     }
 
     /**
@@ -55,31 +39,6 @@ class Purchase extends Model
     public function product()
     {
         return $this->belongsTo(Product::class)->withTrashed();
-    }
-
-    /**
-     * Purchase movements
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function purchaseMovements()
-    {
-        return $this->hasMany(PurchaseMovement::class);
-    }
-
-    /**
-     * My purchases
-     *
-     * @param Builder $query
-     * @return Builder
-     */
-    public function scopeMy(Builder $query)
-    {
-        if (! Auth::user()->isAdmin()) {
-            $query->where('buyer_id', Auth::user()->id);
-        }
-
-        return $query;
     }
 
     /**

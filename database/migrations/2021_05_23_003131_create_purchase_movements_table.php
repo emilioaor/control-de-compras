@@ -16,8 +16,9 @@ class CreatePurchaseMovementsTable extends Migration
         Schema::create('purchase_movements', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
-            $table->foreignId('purchase_id')->nullable()->constrained('purchases');
-            $table->foreignId('purchase_request_id')->nullable()->constrained('purchase_requests');
+            $table->foreignId('purchase_group_id')->nullable()->constrained('purchase_groups');
+            $table->foreignId('purchase_request_group_id')->nullable()->constrained('purchase_request_groups');
+            $table->foreignId('product_id')->constrained('products');
             $table->integer('qty');
             $table->timestamps();
             $table->softDeletes();

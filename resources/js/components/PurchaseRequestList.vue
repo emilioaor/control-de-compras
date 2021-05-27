@@ -17,22 +17,20 @@
                     <thead>
                     <tr>
                         <th>{{ t('validation.attributes.createdAt') }}</th>
-                        <th>{{ t('validation.attributes.product') }}</th>
+                        <th>{{ t('validation.attributes.model') }}</th>
                         <th>{{ t('validation.attributes.seller') }}</th>
                         <th class="text-center">{{ t('validation.attributes.qty') }}</th>
                         <th class="text-center">{{ t('validation.attributes.approved') }}</th>
-                        <th class="text-center">{{ t('validation.attributes.refused') }}</th>
                         <th class="text-center">{{ t('validation.attributes.status') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="item in items" :key="item.id">
                         <td>{{ item.created_at |date(true) }}</td>
-                        <td>{{ item.product.description }}</td>
+                        <td>{{ item.purchase_requests.map(pr => pr.product.model).filter((m, i, a) => a.indexOf(m) === i).join(', ') }}</td>
                         <td>{{ item.seller.name }}</td>
-                        <td class="text-center">{{ item.qty }}</td>
-                        <td class="text-center">{{ item.approved }}</td>
-                        <td class="text-center">{{ item.refused }}</td>
+                        <td class="text-center">{{ item.purchase_requests.reduce((total, pr) => total += pr.qty, 0) }}</td>
+                        <td class="text-center">{{ item.purchase_requests.reduce((total, pr) => total += pr.approved, 0) }}</td>
                         <td class="text-center">
                             <span
                                 class="p-1 rounded"

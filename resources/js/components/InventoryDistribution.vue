@@ -23,7 +23,7 @@
                                 {{ product.description }}
                             </td>
                             <td>
-                                <input type="number" class="form-control" disabled :value="pr.qty">
+                                <input type="number" class="form-control" disabled :value="product.id === pr.product_id ? pr.qty : 0">
                             </td>
                             <td>
                                 <input type="number" class="form-control" disabled :value="getInventoryAvailable(product.id)">

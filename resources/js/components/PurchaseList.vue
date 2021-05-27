@@ -25,9 +25,9 @@
                     <tbody>
                     <tr v-for="item in items" :key="item.id">
                         <td>{{ item.created_at |date(true) }}</td>
-                        <td>{{ item.product.description }}</td>
+                        <td>{{ item.purchases.map(p => p.product.model).filter((m, i, a) => a.indexOf(m) === i).join(', ') }}</td>
                         <td>{{ item.buyer.name }}</td>
-                        <td class="text-center">{{ item.qty }}</td>
+                        <td class="text-center">{{ item.purchases.reduce((total, p) => total + p.qty, 0) }}</td>
                     </tr>
                     </tbody>
                 </table>

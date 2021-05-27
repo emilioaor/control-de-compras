@@ -141,9 +141,9 @@ class User extends Authenticatable
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function purchaseRequests()
+    public function purchaseRequestGroups()
     {
-        return $this->hasMany(PurchaseRequest::class, 'seller_id');
+        return $this->hasMany(PurchaseRequestGroup::class, 'seller_id');
     }
 
     /**
@@ -151,8 +151,8 @@ class User extends Authenticatable
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function purchases()
+    public function purchaseGroups()
     {
-        return $this->hasMany(Purchase::class, 'buyer_id');
+        return $this->hasMany(PurchaseGroup::class, 'buyer_id');
     }
 }

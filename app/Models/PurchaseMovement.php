@@ -15,28 +15,38 @@ class PurchaseMovement extends Model
     use UuidGeneratorTrait;
     use SearchTrait;
 
-    protected $fillable = ['purchase_id', 'purchase_request_id', 'qty'];
+    protected $fillable = ['purchase_group_id', 'purchase_request_group_id', 'product_id', 'qty'];
 
-    protected $search_fields = ['qty'];
+    protected $search_fields = ['products.model', 'products.description', 'products.upc'];
 
     /**
-     * Purchase
+     * Purchase group
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function purchase()
+    public function purchaseGroup()
     {
-        return $this->belongsTo(Purchase::class);
+        return $this->belongsTo(PurchaseGroup::class)->withTrashed();
     }
 
     /**
-     * Purchase request
+     * Purchase request group
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function purchaseRequest()
+    public function purchaseRequestGroup()
     {
-        return $this->belongsTo(PurchaseRequest::class)->withTrashed();
+        return $this->belongsTo(PurchaseRequestGroup::class)->withTrashed();
+    }
+
+    /**
+     * Product
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     /**
@@ -48,19 +58,15 @@ class PurchaseMovement extends Model
     {
         return PurchaseMovement::query()
             ->selectRaw('
-                SUM(purchase_movements.qty) as m_qty,
-                COALESCE(ppr.upc, pp.upc) as upc,
-                COALESCE(ppr.description, pp.description) as description,
-                COALESCE(ppr.id, pp.id) as product_id
+                SUM(purchase_movements.qty) as qty,
+                products.upc,
+                products.description,
+                products.id as product_id
             ')
-            ->leftJoin('purchases', 'purchases.id', '=', 'purchase_movements.purchase_id')
-            ->leftJoin('purchase_requests', 'purchase_requests.id', '=', 'purchase_movements.purchase_request_id')
-            ->leftJoin('products as ppr', 'ppr.id', '=', 'purchase_requests.product_id')
-            ->leftJoin('products as pp', 'pp.id', '=', 'purchases.product_id')
-            ->having('m_qty', '>', 0)
+            ->join('products', 'products.id', '=', 'purchase_movements.product_id')
+            ->having('qty', '>', 0)
             ->groupBy('product_id')
-            ->groupBy('upc')
-            ->groupBy('description')
+            ->orderBy('products.description')
             ->get()
         ;
     }

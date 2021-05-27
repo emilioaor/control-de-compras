@@ -24,7 +24,7 @@
                     <tr v-for="item in itemsFiltered" :key="item.id">
                         <td>{{ item.upc }}</td>
                         <td>{{ item.description }}</td>
-                        <td class="text-center">{{ item.m_qty }}</td>
+                        <td class="text-center">{{ item.qty }}</td>
                     </tr>
                     </tbody>
                 </table>

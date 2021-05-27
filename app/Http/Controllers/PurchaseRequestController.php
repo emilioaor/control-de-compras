@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PurchaseRequest;
+use App\Models\PurchaseRequestGroup;
 use App\Models\User;
 use App\Service\AlertService;
 use Illuminate\Http\Request;
@@ -18,11 +19,11 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseRequests = PurchaseRequest::query()
+        $purchaseRequests = PurchaseRequestGroup::query()
             ->search($request->search)
             ->my()
             ->latest()
-            ->with(['product', 'seller'])
+            ->with(['seller', 'purchaseRequests.product'])
             ->paginate()
         ;
 
@@ -51,14 +52,17 @@ class PurchaseRequestController extends Controller
     {
         DB::beginTransaction();
 
+        $purchaseRequestGroup = new PurchaseRequestGroup($request->all());
+        $purchaseRequestGroup->save();
+
         foreach ($request->purchaseRequests as $current) {
             foreach ($current['products'] as $product) {
 
                 if ($product['qty'] > 0) {
 
                     $purchaseRequest = new PurchaseRequest([
+                        'purchase_request_group_id' => $purchaseRequestGroup->id,
                         'product_id' => $product['id'],
-                        'seller_id' => $current['seller_id'],
                         'qty' => $product['qty']
                     ]);
                     $purchaseRequest->save();

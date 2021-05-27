@@ -22,6 +22,48 @@
                 </div>
                 <div class="card-body">
 
+                    <div class="row mb-3" v-if="user.role === 'administrator' && purchaseType === 'purchase-request'">
+                        <div class="col-sm-6 col-md-4 form-group">
+                            <label>{{ t('validation.attributes.seller') }}</label>
+
+                            <select
+                                class="form-control"
+                                :class="{'is-invalid': errors.has('seller')}"
+                                name="seller"
+                                v-model="form.seller_id"
+                                v-validate
+                                data-vv-rules="required"
+                            >
+                                <option v-for="seller in sellers" :value="seller.id">{{ seller.name }}</option>
+                            </select>
+
+                            <span class="invalid-feedback d-block" role="alert" v-if="errors.has('seller')">
+                                <strong>{{ t('validation.required', {attribute: 'seller'}) }}</strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" v-if="user.role === 'administrator' && purchaseType === 'purchase'">
+                        <div class="col-sm-6 col-md-4 form-group">
+                            <label>{{ t('validation.attributes.buyer') }}</label>
+
+                            <select
+                                class="form-control"
+                                :class="{'is-invalid': errors.has('buyer')}"
+                                name="buyer"
+                                v-model="form.buyer_id"
+                                v-validate
+                                data-vv-rules="required"
+                            >
+                                <option v-for="buyer in buyers" :value="buyer.id">{{ buyer.name }}</option>
+                            </select>
+
+                            <span class="invalid-feedback d-block" role="alert" v-if="errors.has('buyer')">
+                                <strong>{{ t('validation.required', {attribute: 'buyer'}) }}</strong>
+                            </span>
+                        </div>
+                    </div>
+
                     <div class="card card-product mb-3" v-for="(pr, i) in form.purchaseRequests">
                         <div class="card-header bg-secondary d-flex pl-1 align-items-center">
                             <div class="col-auto">
@@ -56,41 +98,6 @@
                             <i class="spinner-border spinner-border-sm" v-if="loadingModel"></i>
 
                             <template v-else>
-
-                                <div class="row mb-3" v-if="user.role === 'administrator' && purchaseType === 'purchase-request'">
-                                    <div class="col-sm-6 col-md-4">
-                                        <label>{{ t('validation.attributes.seller') }}</label>
-
-                                        <select
-                                            class="form-control"
-                                            :class="{'is-invalid': errors.has('seller' + i)}"
-                                            :name="'seller' + i"
-                                            v-model="pr.seller_id"
-                                            v-validate
-                                            data-vv-rules="required"
-                                        >
-                                            <option v-for="seller in sellers" :value="seller.id">{{ seller.name }}</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3" v-if="user.role === 'administrator' && purchaseType === 'purchase'">
-                                    <div class="col-sm-6 col-md-4">
-                                        <label>{{ t('validation.attributes.buyer') }}</label>
-
-                                        <select
-                                            class="form-control"
-                                            :class="{'is-invalid': errors.has('buyer' + i)}"
-                                            :name="'buyer' + i"
-                                            v-model="pr.buyer_id"
-                                            v-validate
-                                            data-vv-rules="required"
-                                        >
-                                            <option v-for="buyer in buyers" :value="buyer.id">{{ buyer.name }}</option>
-                                        </select>
-                                    </div>
-                                </div>
-
                                 <div>
                                     <strong>
                                         <i class="fa fa-mobile-phone"></i>
@@ -219,6 +226,8 @@
                 loading: false,
                 loadingModel: null,
                 form: {
+                    seller_id: null,
+                    buyer_id: null,
                     purchaseRequests: []
                 }
             }
@@ -271,8 +280,6 @@
                 this.form.purchaseRequests.push({
                     model: null,
                     show: true,
-                    seller_id: null,
-                    buyer_id: null,
                     products: []
                 })
             },
