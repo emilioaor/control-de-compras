@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PurchaseMovement;
 use App\Models\PurchaseRequest;
+use App\Models\PurchaseRequestGroup;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -29,9 +30,9 @@ class InventoryController extends Controller
     public function distribution()
     {
         $inventory = PurchaseMovement::getInventoryAvailable();
-        $purchaseRequests = PurchaseRequest::query()
-            ->where('status', PurchaseRequest::STATUS_PENDING)
-            ->with(['product.sameModel', 'seller'])
+        $purchaseRequests = PurchaseRequestGroup::query()
+            ->where('status', PurchaseRequestGroup::STATUS_PENDING)
+            ->with(['purchaseRequests.product.sameModel', 'seller'])
             ->get()
         ;
 

@@ -2,7 +2,7 @@
 
 @section('content')
     <inventory-distribution
-        :purchase-requests = "{{ json_encode($purchaseRequests) }}"
+        :edit-data = "{{ json_encode($purchaseRequests) }}"
         :inventory = "{{ json_encode($inventory) }}"
     ></inventory-distribution>
 @endsection
