@@ -170,6 +170,7 @@ return [
         'buyer' => 'Buyer',
         'ordered' => 'Ordered',
         'available' => 'Available',
+        'balance' => 'Balance',
     ],
 
 ];

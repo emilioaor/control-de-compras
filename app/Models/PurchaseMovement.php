@@ -52,11 +52,19 @@ class PurchaseMovement extends Model
     /**
      * getInventoryAvailable
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection|array
      */
     public static function getInventoryAvailable()
     {
-        return PurchaseMovement::query()
+        $ordered = PurchaseRequest::query()
+            ->selectRaw('SUM(qty) as qty, product_id')
+            ->join('purchase_request_groups as prg', 'prg.id', '=', 'purchase_requests.purchase_request_group_id')
+            ->where('prg.status', PurchaseRequestGroup::STATUS_PENDING)
+            ->groupBy('product_id')
+            ->get()
+        ;
+
+        $purchaseMovements = PurchaseMovement::query()
             ->selectRaw('
                 SUM(purchase_movements.qty) as qty,
                 products.upc,
@@ -64,10 +72,34 @@ class PurchaseMovement extends Model
                 products.id as product_id
             ')
             ->join('products', 'products.id', '=', 'purchase_movements.product_id')
-            ->having('qty', '>', 0)
             ->groupBy('product_id')
             ->orderBy('products.description')
             ->get()
+            ->map(function ($purchaseMovement) use ($ordered) {
+
+                $purchaseMovement->ordered = 0;
+
+                foreach ($ordered as $o) {
+                    if ($o['product_id'] === $purchaseMovement->product_id) {
+                        $purchaseMovement->ordered = $o['qty'];
+                        break;
+                    }
+                }
+
+                $purchaseMovement->balance = $purchaseMovement->qty - $purchaseMovement->ordered;
+
+                return $purchaseMovement;
+
+            })->filter(function ($purchaseMovement) {
+                return $purchaseMovement->ordered > 0 || $purchaseMovement->qty > 0;
+            })->toArray()
         ;
+
+        $response = [];
+        foreach ($purchaseMovements as $purchaseMovement) {
+            $response[] = $purchaseMovement;
+        }
+
+        return $response;
     }
 }

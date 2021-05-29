@@ -17,14 +17,29 @@
                     <tr>
                         <th>{{ t('validation.attributes.upc') }}</th>
                         <th>{{ t('validation.attributes.product') }}</th>
-                        <th class="text-center">{{ t('validation.attributes.qty') }}</th>
+                        <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
+                        <th class="text-center">{{ t('validation.attributes.available') }}</th>
+                        <th class="text-center">{{ t('validation.attributes.balance') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="item in itemsFiltered" :key="item.id">
                         <td>{{ item.upc }}</td>
                         <td>{{ item.description }}</td>
+                        <td class="text-center">{{ item.ordered }}</td>
                         <td class="text-center">{{ item.qty }}</td>
+                        <td class="text-center">
+                            <span
+                                class="d-inline-block p-1 px-2 rounded"
+                                :class="{
+                                    'bg-warning': item.balance === 0,
+                                    'bg-success text-white': item.balance > 0,
+                                    'bg-danger text-white': item.balance < 0
+                                }"
+                            >
+                                {{ item.balance }}
+                            </span>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
