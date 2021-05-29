@@ -6,8 +6,12 @@
             </div>
             <div class="card-body">
 
+                <div v-if="form.purchaseRequestGroups.length === 0">
+                    <h5>{{ t('form.nothingPendingToProcess') }}</h5>
+                </div>
+
                 <template v-for="inv in inventory">
-                    <input type="hidden" :name="'inventory' + inv.product_id" v-validate data-vv-rules="min_value:0" :value="getInventoryAvailable(inv.product_id)">
+                    <input type="hidden" :name="'inventory' + inv.product_id" v-validate data-vv-rules="required" v-if="getInventoryAvailable(inv.product_id) < 0">
                 </template>
 
                 <div class="card mb-4 card-product" v-for="(prg, i) in form.purchaseRequestGroups">
@@ -63,15 +67,12 @@
                                         type="number"
                                         :name="'approved' + i + '-' + ii"
                                         class="form-control"
-                                        :class="{'is-invalid': errors.has('approved' + i + '-' + ii) || errors.has('inventory' + product.id)}"
+                                        :class="{'is-invalid': errors.has('approved' + i + '-' + ii, 'prg' + i) || errors.has('inventory' + product.id)}"
                                         v-model="product.approved"
                                         v-validate
                                         data-vv-rules="required|numeric"
-                                        :readonly="! product.hasInventory"
-                                        @keypress="$validator.validate('inventory' + product.id)"
-                                        @keydown="$validator.validate('inventory' + product.id)"
-                                        @keyup="$validator.validate('inventory' + product.id)"
-                                        @change="$validator.validate('inventory' + product.id)"
+                                        :data-vv-scope="'prg' + i"
+                                        :readonly="! product.hasInventory || prg.complete"
                                     >
                                 </td>
                             </tr>
@@ -100,13 +101,35 @@
                             </tfoot>
                         </table>
 
-                        <div v-show="prg.show">
-                            <button class="btn btn-success">
-                                <i class="fa fa-mobile-phone"></i> &nbsp;
-                                <i class="fa fa-arrow-alt-circle-right"></i> &nbsp;
-                                <i class="fa fa-store-alt"></i> &nbsp;
-                                {{ t('form.assignToSeller') }}
-                            </button>
+                        <div v-if="prg.complete">
+                            <div class="alert alert-success">
+                                {{ t('alert.processSuccessfully') }}
+                            </div>
+                        </div>
+                        <div v-else v-show="prg.show">
+                            <i class="spinner-border spinner-border-sm" v-if="loading === i"></i>
+
+                            <button-confirmation
+                                :label="t('form.assignToSeller')"
+                                btn-class="btn btn-success"
+                                icon-class="fa fa-mobile-phone"
+                                v-if="loading !== i"
+                                :disabled="loading !== null"
+                                :confirmation="t('form.areYouSure')"
+                                :buttons="[
+                                        {
+                                            label: t('form.yes'),
+                                            btnClass: 'btn btn-success',
+                                            code: 'yes'
+                                        },
+                                        {
+                                            label: t('form.no'),
+                                            btnClass: 'btn btn-danger',
+                                            code: 'no'
+                                        }
+                                    ]"
+                                @confirmed="handleAssignProducts($event, prg, i)"
+                            ></button-confirmation>
                         </div>
                     </div>
                 </div>
@@ -117,6 +140,8 @@
 </template>
 
 <script>
+    import ApiService from '../services/ApiService';
+
     export default {
         name: 'inventory-distribution',
         props: {
@@ -134,7 +159,8 @@
             return {
                 form: {
                     purchaseRequestGroups: []
-                }
+                },
+                loading: null
             }
         },
 
@@ -155,6 +181,7 @@
                         return {
                             ...prg,
                             show: true,
+                            complete: false,
                             products: products.map(p => {
                                 return {
                                     ...p,
@@ -182,7 +209,37 @@
                 }, 0)
 
                 return available - consumed;
-            }
+            },
+
+            handleAssignProducts(code, productRequestGroup, index) {
+                if (code === 'yes') {
+                    this.$validator.validateAll('prg' + index).then(res => {
+
+                        this.$validator.validateAll().then(inv =>  {
+
+                            const hasError = productRequestGroup.products.some(p => this.errors.has('inventory' + p.id));
+
+                            if (res && ! hasError) {
+                                this.loading = index;
+
+                                ApiService.post('/buyer/inventory/distribution/' + productRequestGroup.uuid, {
+                                    ...productRequestGroup
+                                }).then(res => {
+
+                                    if (res.data.success) {
+                                        productRequestGroup.complete = true;
+                                        productRequestGroup.show = false;
+                                        this.loading = null;
+                                    }
+                                }).catch(err => {
+                                    this.loading = null;
+                                })
+                            }
+                        })
+                    })
+                }
+
+            },
         }
     }
 </script>

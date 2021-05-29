@@ -30,4 +30,5 @@ return [
     'hasErrors' => 'Has errors',
     'productsByModel' => 'Products by model can not be 0',
     'assignToSeller' => 'Assign them to the seller',
+    'nothingPendingToProcess' => 'Nothing pending to process',
 ];

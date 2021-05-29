@@ -51,6 +51,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('purchase-request', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('buyer.purchase-request.index');
         Route::get('inventory', [\App\Http\Controllers\InventoryController::class, 'index'])->name('buyer.inventory.index');
         Route::get('inventory/distribution', [\App\Http\Controllers\InventoryController::class, 'distribution'])->name('buyer.inventory.distribution');
+        Route::post('inventory/distribution/{uuid}', [\App\Http\Controllers\InventoryController::class, 'storeDistribution']);
     });
 
     Route::group([
