@@ -10,6 +10,18 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-6 col-lg-4 form-group">
+                                <label for="number">{{ t('validation.attributes.number') }}</label>
+                                <input
+                                    type="text"
+                                    id="number"
+                                    name="number"
+                                    class="form-control"
+                                    :value="formC.number"
+                                    readonly
+                                >
+                            </div>
+
+                            <div class="col-sm-6 col-lg-4 form-group">
                                 <label for="seller">{{ t('validation.attributes.seller') }}</label>
                                 <input
                                     type="text"
@@ -124,6 +136,7 @@
         data() {
             return {
                 form: {
+                    number: null,
                     seller_id: null,
                     seller: null,
                     purchase_requests: [],

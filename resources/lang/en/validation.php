@@ -171,7 +171,8 @@ return [
         'ordered' => 'Ordered',
         'available' => 'Available',
         'balance' => 'Balance',
-        'processedAt' => 'Processed at'
+        'processedAt' => 'Processed at',
+        'number' => 'Number'
     ],
 
 ];

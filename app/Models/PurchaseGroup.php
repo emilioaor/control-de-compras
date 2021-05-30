@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contract\NumberTrait;
 use App\Contract\SearchTrait;
 use App\Contract\UuidGeneratorTrait;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,10 +17,13 @@ class PurchaseGroup extends Model
     use UuidGeneratorTrait;
     use SearchTrait;
     use SoftDeletes;
+    use NumberTrait;
 
     protected $fillable = ['buyer_id'];
 
-    protected $search_fields= ['p.model', 'p.description'];
+    protected $search_fields= ['p.model', 'p.description', 'number'];
+
+    protected $number_prefix = 'COMPRA-';
 
     /**
      * PurchaseGroup constructor.

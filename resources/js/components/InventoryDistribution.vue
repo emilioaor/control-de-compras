@@ -16,11 +16,20 @@
 
                 <div class="card mb-4 card-product" v-for="(prg, i) in form.purchaseRequestGroups">
                     <div class="card-header bg-secondary">
-                        <strong>{{ prg.seller.name }} <small>({{ prg.created_at | date(true) }})</small></strong>
+                        <strong>
+                            {{ prg.number }}
+                            <small>({{ prg.created_at | date(true) }})</small>
+                        </strong>
                     </div>
 
                     <div class="card-body">
 
+                        <div>
+                            <strong>
+                                <i class="fa fa-user"></i>
+                                {{ prg.seller.name }}
+                            </strong>
+                        </div>
                         <div class="mb-2">
                             <strong>
                                 <i class="fa fa-mobile-phone"></i>
@@ -36,7 +45,7 @@
                             </strong>
                         </div>
 
-                        <table class="table">
+                        <table class="table table-responsive-sm">
                             <thead>
                             <tr>
                                 <th>{{ t('validation.attributes.product') }}</th>

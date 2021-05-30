@@ -16,6 +16,7 @@ class CreatePurchaseRequestGroupsTable extends Migration
         Schema::create('purchase_request_groups', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
+            $table->string('number', 15)->unique();
             $table->enum('status', ['pending', 'processed']);
             $table->foreignId('seller_id')->constrained('users');
             $table->dateTime('processed_at')->nullable();

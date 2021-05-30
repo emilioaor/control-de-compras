@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contract\NumberTrait;
 use App\Contract\SearchTrait;
 use App\Contract\UuidGeneratorTrait;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,6 +17,7 @@ class PurchaseRequestGroup extends Model
     use UuidGeneratorTrait;
     use SearchTrait;
     use SoftDeletes;
+    use NumberTrait;
 
     /** Status */
     const STATUS_PENDING = 'pending';
@@ -23,9 +25,11 @@ class PurchaseRequestGroup extends Model
 
     protected $fillable = ['seller_id'];
 
-    protected $search_fields= ['status', 'p.model', 'p.description'];
+    protected $search_fields= ['status', 'p.model', 'p.description', 'number'];
 
     protected $dates = ['processed_at'];
+
+    protected $number_prefix = 'ORDEN-';
 
     /**
      * PurchaseRequest constructor.

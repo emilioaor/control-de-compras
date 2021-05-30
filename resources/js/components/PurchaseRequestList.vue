@@ -17,6 +17,7 @@
                     <thead>
                     <tr>
                         <th>{{ t('validation.attributes.createdAt') }}</th>
+                        <th>{{ t('validation.attributes.number') }}</th>
                         <th>{{ t('validation.attributes.model') }}</th>
                         <th>{{ t('validation.attributes.seller') }}</th>
                         <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
@@ -28,6 +29,7 @@
                     <tbody>
                     <tr v-for="item in items" :key="item.id">
                         <td>{{ item.created_at |date(true) }}</td>
+                        <td>{{ item.number }}</td>
                         <td>{{ item.purchase_requests.map(pr => pr.product.model).filter((m, i, a) => a.indexOf(m) === i).join(', ') }}</td>
                         <td>{{ item.seller.name }}</td>
                         <td class="text-center">{{ item.purchase_requests.reduce((total, pr) => total += pr.qty, 0) }}</td>

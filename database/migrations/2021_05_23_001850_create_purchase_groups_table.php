@@ -16,6 +16,7 @@ class CreatePurchaseGroupsTable extends Migration
         Schema::create('purchase_groups', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
+            $table->string('number', 15)->unique();
             $table->foreignId('buyer_id')->constrained('users');
             $table->timestamps();
             $table->softDeletes();

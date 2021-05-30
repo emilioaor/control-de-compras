@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contract\SearchTrait;
 use App\Contract\UuidGeneratorTrait;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -57,8 +58,14 @@ class PurchaseMovement extends Model
     public static function getInventoryAvailable()
     {
         $ordered = PurchaseRequest::query()
-            ->selectRaw('SUM(qty) as qty, product_id')
+            ->selectRaw('
+                SUM(qty) as qty,
+                products.upc,
+                products.description,
+                products.id as product_id
+            ')
             ->join('purchase_request_groups as prg', 'prg.id', '=', 'purchase_requests.purchase_request_group_id')
+            ->join('products', 'products.id', '=', 'purchase_requests.product_id')
             ->where('prg.status', PurchaseRequestGroup::STATUS_PENDING)
             ->groupBy('product_id')
             ->get()
@@ -75,30 +82,34 @@ class PurchaseMovement extends Model
             ->groupBy('product_id')
             ->orderBy('products.description')
             ->get()
-            ->map(function ($purchaseMovement) use ($ordered) {
-
-                $purchaseMovement->ordered = 0;
-
-                foreach ($ordered as $o) {
-                    if ($o['product_id'] === $purchaseMovement->product_id) {
-                        $purchaseMovement->ordered = $o['qty'];
-                        break;
-                    }
-                }
-
-                $purchaseMovement->balance = $purchaseMovement->qty - $purchaseMovement->ordered;
-
-                return $purchaseMovement;
-
-            })->filter(function ($purchaseMovement) {
-                return $purchaseMovement->ordered > 0 || $purchaseMovement->qty > 0;
-            })->toArray()
         ;
 
-        $response = [];
+        $response = new Collection();
         foreach ($purchaseMovements as $purchaseMovement) {
-            $response[] = $purchaseMovement;
+
+            $o = $ordered->where('product_id', $purchaseMovement->product_id)->first();
+
+            $purchaseMovement->ordered =  $o->qty ?? 0;
+            $purchaseMovement->balance = $purchaseMovement->qty - $purchaseMovement->ordered;
+
+            $response->push($purchaseMovement);
         }
+
+        foreach ($ordered as $o) {
+            $pm = $response->where('product_id', $o->product_id)->first();
+
+            if (! $pm) {
+                $o->ordered = $o->qty;
+                $o->qty = 0;
+                $o->balance = $o->ordered * -1;
+
+                $response->push($o);
+            }
+        }
+
+        $response = $response->filter(function ($current) {
+            return $current->qty > 0 || $current->ordered > 0;
+        });
 
         return $response;
     }
