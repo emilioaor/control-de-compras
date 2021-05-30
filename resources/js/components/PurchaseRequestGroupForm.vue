@@ -21,38 +21,14 @@
                                 >
                             </div>
 
-                            <div class="col-sm-6 col-lg-2 form-group">
-                                <label for="ordered">{{ t('validation.attributes.ordered') }}</label>
+                            <div class="col-sm-6 col-lg-4 form-group" v-if="form.processed_at">
+                                <label for="processed_at">{{ t('validation.attributes.processedAt') }}</label>
                                 <input
                                     type="text"
-                                    id="ordered"
-                                    name="ordered"
+                                    id="processed_at"
+                                    name="processed_at"
                                     class="form-control"
-                                    :value="formC.ordered"
-                                    readonly
-                                >
-                            </div>
-
-                            <div class="col-sm-6 col-lg-2 form-group">
-                                <label for="approved">{{ t('validation.attributes.approved') }}</label>
-                                <input
-                                    type="text"
-                                    id="approved"
-                                    name="approved"
-                                    class="form-control"
-                                    :value="formC.approved"
-                                    readonly
-                                >
-                            </div>
-
-                            <div class="col-sm-6 col-lg-2 form-group">
-                                <label for="balance">{{ t('validation.attributes.balance') }}</label>
-                                <input
-                                    type="text"
-                                    id="balance"
-                                    name="balance"
-                                    class="form-control"
-                                    :value="formC.balance"
+                                    :value="form.processed_at | date(true)"
                                     readonly
                                 >
                             </div>
@@ -70,18 +46,6 @@
                                         {{ t('status.' + form.status) }}
                                     </span>
                                 </div>
-                            </div>
-
-                            <div class="col-sm-6 col-lg-4 form-group" v-if="form.processed_at">
-                                <label for="processed_at">{{ t('validation.attributes.processedAt') }}</label>
-                                <input
-                                    type="text"
-                                    id="processed_at"
-                                    name="processed_at"
-                                    class="form-control"
-                                    :value="form.processed_at | date(true)"
-                                    readonly
-                                >
                             </div>
 
                             <div class="col-12 form-group mt-2">

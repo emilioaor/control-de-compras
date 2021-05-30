@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PurchaseMovement;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestGroup;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -53,6 +54,7 @@ class InventoryController extends Controller
 
         $purchaseRequestGroup = PurchaseRequestGroup::query()->uuid($id)->firstOrFail();
         $purchaseRequestGroup->status = PurchaseRequestGroup::STATUS_PROCESSED;
+        $purchaseRequestGroup->processed_at = Carbon::now();
         $purchaseRequestGroup->save();
 
         foreach ($request->products as $p) {
