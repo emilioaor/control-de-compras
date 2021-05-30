@@ -19,7 +19,7 @@
                         <th>{{ t('validation.attributes.product') }}</th>
                         <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
                         <th class="text-center">{{ t('validation.attributes.available') }}</th>
-                        <th class="text-center">{{ t('validation.attributes.balance') }}</th>
+                        <th width="5%" class="text-center">{{ t('validation.attributes.balance') }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -30,7 +30,7 @@
                         <td class="text-center">{{ item.qty }}</td>
                         <td class="text-center">
                             <span
-                                class="d-inline-block p-1 px-2 rounded"
+                                class="d-block p-1 py-2 rounded"
                                 :class="{
                                     'bg-warning': item.balance === 0,
                                     'bg-success text-white': item.balance > 0,

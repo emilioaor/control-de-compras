@@ -23,7 +23,7 @@ class PurchaseRequestController extends Controller
             ->search($request->search)
             ->my()
             ->latest()
-            ->with(['seller', 'purchaseRequests.product'])
+            ->with(['seller', 'purchaseRequests.product', 'purchaseMovements'])
             ->paginate()
         ;
 
@@ -96,7 +96,13 @@ class PurchaseRequestController extends Controller
      */
     public function edit($id)
     {
-        //
+        $purchaseRequestGroup = PurchaseRequestGroup::query()
+            ->uuid($id)
+            ->with(['purchaseRequests.product', 'purchaseMovements.product', 'seller'])
+            ->firstOrFail()
+        ;
+
+        return view('purchaseRequest.edit', compact('purchaseRequestGroup'));
     }
 
     /**

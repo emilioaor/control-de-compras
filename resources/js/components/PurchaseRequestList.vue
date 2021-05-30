@@ -19,9 +19,10 @@
                         <th>{{ t('validation.attributes.createdAt') }}</th>
                         <th>{{ t('validation.attributes.model') }}</th>
                         <th>{{ t('validation.attributes.seller') }}</th>
-                        <th class="text-center">{{ t('validation.attributes.qty') }}</th>
+                        <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
                         <th class="text-center">{{ t('validation.attributes.approved') }}</th>
                         <th class="text-center">{{ t('validation.attributes.status') }}</th>
+                        <th width="5%"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -30,7 +31,7 @@
                         <td>{{ item.purchase_requests.map(pr => pr.product.model).filter((m, i, a) => a.indexOf(m) === i).join(', ') }}</td>
                         <td>{{ item.seller.name }}</td>
                         <td class="text-center">{{ item.purchase_requests.reduce((total, pr) => total += pr.qty, 0) }}</td>
-                        <td class="text-center">{{ item.purchase_requests.reduce((total, pr) => total += pr.approved, 0) }}</td>
+                        <td class="text-center">{{ item.purchase_movements.reduce((total, pm) => total += pm.qty * -1, 0) }}</td>
                         <td class="text-center">
                             <span
                                 class="p-1 rounded"
@@ -41,6 +42,14 @@
                             >
                                 {{ t('status.' + item.status) }}
                             </span>
+                        </td>
+                        <td>
+                            <a v-if="user.role === 'buyer'" :href="'/buyer/purchase-request/' + item.uuid + '/edit'" class="btn btn-warning">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a v-else :href="'/seller/purchase-request/' + item.uuid + '/edit'" class="btn btn-warning">
+                                <i class="fa fa-edit"></i>
+                            </a>
                         </td>
                     </tr>
                     </tbody>
