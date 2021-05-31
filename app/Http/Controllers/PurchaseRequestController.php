@@ -97,6 +97,7 @@ class PurchaseRequestController extends Controller
     public function edit($id)
     {
         $purchaseRequestGroup = PurchaseRequestGroup::query()
+            ->my()
             ->uuid($id)
             ->with(['purchaseRequests.product', 'purchaseMovements.product', 'seller'])
             ->firstOrFail()

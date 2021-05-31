@@ -103,7 +103,14 @@ class PurchaseController extends Controller
      */
     public function edit($id)
     {
-        //
+        $purchaseGroup = PurchaseGroup::query()
+            ->my()
+            ->uuid($id)
+            ->with(['purchaseMovements.product', 'buyer'])
+            ->firstOrFail()
+        ;
+
+        return view('purchase.edit', compact('purchaseGroup'));
     }
 
     /**

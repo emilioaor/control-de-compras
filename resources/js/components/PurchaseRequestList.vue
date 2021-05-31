@@ -47,10 +47,10 @@
                         </td>
                         <td>
                             <a v-if="user.role === 'buyer'" :href="'/buyer/purchase-request/' + item.uuid + '/edit'" class="btn btn-warning">
-                                <i class="fa fa-edit"></i>
+                                <i class="fa fa-eye"></i>
                             </a>
                             <a v-else :href="'/seller/purchase-request/' + item.uuid + '/edit'" class="btn btn-warning">
-                                <i class="fa fa-edit"></i>
+                                <i class="fa fa-eye"></i>
                             </a>
                         </td>
                     </tr>

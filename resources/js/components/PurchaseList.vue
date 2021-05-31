@@ -21,6 +21,7 @@
                         <th>{{ t('validation.attributes.product') }}</th>
                         <th>{{ t('validation.attributes.buyer') }}</th>
                         <th class="text-center">{{ t('validation.attributes.qty') }}</th>
+                        <th width="5%"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -30,6 +31,11 @@
                         <td>{{ item.purchases.map(p => p.product.model).filter((m, i, a) => a.indexOf(m) === i).join(', ') }}</td>
                         <td>{{ item.buyer.name }}</td>
                         <td class="text-center">{{ item.purchases.reduce((total, p) => total + p.qty, 0) }}</td>
+                        <td>
+                            <a :href="'/buyer/purchase/' + item.uuid + '/edit'" class="btn btn-warning">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

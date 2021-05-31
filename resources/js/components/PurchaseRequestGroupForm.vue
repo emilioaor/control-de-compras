@@ -4,7 +4,12 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-edit"></i> {{ t('form.edit') }} {{ t('menu.purchaseRequests') }}
+                        <template v-if="purchaseType === 'purchase-request'">
+                            <i class="fa fa-eye"></i> {{ t('menu.purchaseRequests') }}
+                        </template>
+                        <template v-if="purchaseType === 'purchase'">
+                            <i class="fa fa-eye"></i> {{ t('menu.purchases') }}
+                        </template>
                     </div>
 
                     <div class="card-body">
@@ -21,33 +26,34 @@
                                 >
                             </div>
 
-                            <div class="col-sm-6 col-lg-4 form-group">
-                                <label for="seller">{{ t('validation.attributes.seller') }}</label>
-                                <input
-                                    type="text"
-                                    id="seller"
-                                    name="seller"
-                                    class="form-control"
-                                    :value="formC.seller ? formC.seller.name : ''"
-                                    readonly
-                                >
-                            </div>
+                            <template v-if="purchaseType === 'purchase-request'">
+                                <div class="col-sm-6 col-lg-4 form-group">
+                                    <label for="seller">{{ t('validation.attributes.seller') }}</label>
+                                    <input
+                                        type="text"
+                                        id="seller"
+                                        name="seller"
+                                        class="form-control"
+                                        :value="formC.seller ? formC.seller.name : ''"
+                                        readonly
+                                    >
+                                </div>
 
-                            <div class="col-sm-6 col-lg-4 form-group" v-if="form.processed_at">
-                                <label for="processed_at">{{ t('validation.attributes.processedAt') }}</label>
-                                <input
-                                    type="text"
-                                    id="processed_at"
-                                    name="processed_at"
-                                    class="form-control"
-                                    :value="form.processed_at | date(true)"
-                                    readonly
-                                >
-                            </div>
+                                <div class="col-sm-6 col-lg-4 form-group" v-if="form.processed_at">
+                                    <label for="processed_at">{{ t('validation.attributes.processedAt') }}</label>
+                                    <input
+                                        type="text"
+                                        id="processed_at"
+                                        name="processed_at"
+                                        class="form-control"
+                                        :value="form.processed_at | date(true)"
+                                        readonly
+                                    >
+                                </div>
 
-                            <div class="col-sm-6 col-lg-4 form-group">
-                                <label>{{ t('validation.attributes.status') }}</label>
-                                <div>
+                                <div class="col-sm-6 col-lg-4 form-group">
+                                    <label>{{ t('validation.attributes.status') }}</label>
+                                    <div>
                                     <span
                                         class="py-2 px-3 rounded"
                                         :class="{
@@ -57,8 +63,22 @@
                                     >
                                         {{ t('status.' + form.status) }}
                                     </span>
+                                    </div>
                                 </div>
-                            </div>
+                            </template>
+                            <template v-else-if="purchaseType === 'purchase'">
+                                <div class="col-sm-6 col-lg-4 form-group">
+                                    <label for="buyer">{{ t('validation.attributes.buyer') }}</label>
+                                    <input
+                                        type="text"
+                                        id="buyer"
+                                        name="buyer"
+                                        class="form-control"
+                                        :value="formC.buyer ? formC.buyer.name : ''"
+                                        readonly
+                                    >
+                                </div>
+                            </template>
 
                             <div class="col-12 form-group mt-2">
                                 <table class="table table-responsive">
@@ -66,18 +86,24 @@
                                         <tr>
                                             <th>{{ t('validation.attributes.upc') }}</th>
                                             <th>{{ t('validation.attributes.upc') }}</th>
-                                            <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
-                                            <th class="text-center">{{ t('validation.attributes.approved') }}</th>
-                                            <th width="5%" class="text-center">{{ t('validation.attributes.balance') }}</th>
+                                            <template v-if="purchaseType === 'purchase-request'">
+                                                <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
+                                                <th class="text-center">{{ t('validation.attributes.approved') }}</th>
+                                                <th width="5%" class="text-center">{{ t('validation.attributes.balance') }}</th>
+                                            </template>
+                                            <template v-else-if="purchaseType === 'purchase'">
+                                                <th width="5%" class="text-center">{{ t('validation.attributes.qty') }}</th>
+                                            </template>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="product in formC.products">
                                             <td>{{ product.upc }}</td>
                                             <td>{{ product.description }}</td>
-                                            <td class="text-center">{{ product.ordered }}</td>
-                                            <td class="text-center">{{ product.approved }}</td>
-                                            <td class="text-center">
+                                            <template v-if="purchaseType === 'purchase-request'">
+                                                <td class="text-center">{{ product.ordered }}</td>
+                                                <td class="text-center">{{ product.approved }}</td>
+                                                <td class="text-center">
                                                 <span
                                                     class="d-block rounded p-1 py-2"
                                                     :class="{
@@ -87,10 +113,14 @@
                                                 >
                                                     {{ product.balance }}
                                                 </span>
-                                            </td>
+                                                </td>
+                                            </template>
+                                            <template v-else-if="purchaseType === 'purchase'">
+                                                <td class="text-center">{{ product.approved }}</td>
+                                            </template>
                                         </tr>
                                     </tbody>
-                                    <tfoot>
+                                    <tfoot v-if="purchaseType === 'purchase-request'">
                                         <tr>
                                             <th>{{ t('form.total') }}</th>
                                             <th></th>
@@ -126,11 +156,21 @@
             editData: {
                 type: Object,
                 required: true
+            },
+            purchaseType: {
+                type: String,
+                required: true,
+                validator: value => {
+                    return value === 'purchase' || value === 'purchase-request'
+                }
             }
         },
         mounted() {
             if (this.editData) {
-                this.form = {...this.editData};
+                this.form = {
+                    ...this.form,
+                    ...this.editData
+                };
             }
         },
         data() {
@@ -139,6 +179,8 @@
                     number: null,
                     seller_id: null,
                     seller: null,
+                    buyer: null,
+                    purchases: [],
                     purchase_requests: [],
                     purchase_movements: [],
                     processed_at: null,
@@ -170,8 +212,8 @@
                         products.push({
                             ...pm.product,
                             ordered: 0,
-                            approved: pm.qty * -1,
-                            balance: pm.qty * -1
+                            approved: pm.qty < 0 ? pm.qty * -1 : pm.qty,
+                            balance: pm.qty < 0 ? pm.qty * -1 : pm.qty
                         })
                     }
                 })
