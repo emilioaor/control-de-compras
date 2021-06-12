@@ -36,10 +36,10 @@
                         <td class="text-center">{{ item.purchase_movements.reduce((total, pm) => total += pm.qty * -1, 0) }}</td>
                         <td class="text-center">
                             <span
-                                class="p-1 rounded"
+                                class="p-1 rounded d-inline-block"
                                 :class="{
-                                    'bg-info' : item.status === 'pending',
-                                    'bg-success text-white': item.status === 'processed'
+                                    'bg-info' : item.status === 'open',
+                                    'bg-secondary text-white': item.status === 'closed'
                                 }"
                             >
                                 {{ t('status.' + item.status) }}

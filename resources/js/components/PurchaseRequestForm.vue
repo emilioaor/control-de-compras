@@ -143,9 +143,9 @@
                                             :class="{'is-invalid': errors.has('qty' + i + '-' + ii)}"
                                             v-model="product.qty"
                                             v-validate
-                                            data-vv-rules="required|min_value:0"
+                                            data-vv-rules="numeric|min_value:0"
                                         >
-                                        <span class="invalid-feedback" role="alert" v-if="errors.firstByRule('qty' + i + '-' + ii, 'required')">
+                                        <span class="invalid-feedback" role="alert" v-if="errors.firstByRule('qty' + i + '-' + ii, 'numeric')">
                                             <strong>
                                                 {{ t('validation.required', {attribute: 'qty'}) }}
                                             </strong>
@@ -299,7 +299,7 @@
                         this.form.purchaseRequests[index].products = res.data.data.map(p => {
                             return  {
                                 ...p,
-                                qty: 0
+                                qty: null
                             }
                         });
 

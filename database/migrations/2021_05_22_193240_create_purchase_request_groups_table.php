@@ -17,9 +17,7 @@ class CreatePurchaseRequestGroupsTable extends Migration
             $table->id();
             $table->uuid('uuid');
             $table->string('number', 15)->unique();
-            $table->enum('status', ['pending', 'processed']);
             $table->foreignId('seller_id')->constrained('users');
-            $table->dateTime('processed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

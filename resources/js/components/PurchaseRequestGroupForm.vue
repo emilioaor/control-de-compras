@@ -38,33 +38,6 @@
                                         readonly
                                     >
                                 </div>
-
-                                <div class="col-sm-6 col-lg-4 form-group" v-if="form.processed_at">
-                                    <label for="processed_at">{{ t('validation.attributes.processedAt') }}</label>
-                                    <input
-                                        type="text"
-                                        id="processed_at"
-                                        name="processed_at"
-                                        class="form-control"
-                                        :value="form.processed_at | date(true)"
-                                        readonly
-                                    >
-                                </div>
-
-                                <div class="col-sm-6 col-lg-4 form-group">
-                                    <label>{{ t('validation.attributes.status') }}</label>
-                                    <div>
-                                    <span
-                                        class="py-2 px-3 rounded"
-                                        :class="{
-                                            'bg-info' : form.status === 'pending',
-                                            'bg-success text-white': form.status === 'processed'
-                                        }"
-                                    >
-                                        {{ t('status.' + form.status) }}
-                                    </span>
-                                    </div>
-                                </div>
                             </template>
                             <template v-else-if="purchaseType === 'purchase'">
                                 <div class="col-sm-6 col-lg-4 form-group">
@@ -80,12 +53,27 @@
                                 </div>
                             </template>
 
+                            <div class="col-sm-6 col-lg-4 form-group">
+                                <label>{{ t('validation.attributes.status') }}</label>
+                                <div>
+                                    <span
+                                        class="py-2 px-3 rounded d-inline-block"
+                                        :class="{
+                                            'bg-info' : form.status === 'open',
+                                            'bg-secondary text-white': form.status === 'closed'
+                                        }"
+                                    >
+                                        {{ t('status.' + form.status) }}
+                                    </span>
+                                </div>
+                            </div>
+
                             <div class="col-12 form-group mt-2">
                                 <table class="table table-responsive">
                                     <thead>
                                         <tr>
                                             <th>{{ t('validation.attributes.upc') }}</th>
-                                            <th>{{ t('validation.attributes.upc') }}</th>
+                                            <th>{{ t('validation.attributes.description') }}</th>
                                             <template v-if="purchaseType === 'purchase-request'">
                                                 <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
                                                 <th class="text-center">{{ t('validation.attributes.approved') }}</th>
@@ -206,7 +194,7 @@
                     const product = products.find(p => p.id === pm.product_id)
 
                     if (product) {
-                        product.approved = pm.qty * -1;
+                        product.approved += (pm.qty < 0 ? pm.qty * -1 : pm.qty);
                         product.balance = product.approved - product.ordered
                     } else {
                         products.push({

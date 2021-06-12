@@ -33,7 +33,7 @@ class InventoryController extends Controller
     {
         $inventory = PurchaseMovement::getInventoryAvailable();
         $purchaseRequests = PurchaseRequestGroup::query()
-            ->where('status', PurchaseRequestGroup::STATUS_PENDING)
+            ->whereBetween('created_at', PurchaseRequestGroup::weekRange())
             ->with(['purchaseRequests.product.sameModel', 'seller'])
             ->get()
         ;
@@ -53,9 +53,6 @@ class InventoryController extends Controller
         DB::beginTransaction();
 
         $purchaseRequestGroup = PurchaseRequestGroup::query()->uuid($id)->firstOrFail();
-        $purchaseRequestGroup->status = PurchaseRequestGroup::STATUS_PROCESSED;
-        $purchaseRequestGroup->processed_at = Carbon::now();
-        $purchaseRequestGroup->save();
 
         foreach ($request->products as $p) {
             if ($p['approved'] > 0) {

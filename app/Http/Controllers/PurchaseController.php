@@ -53,19 +53,31 @@ class PurchaseController extends Controller
     {
         DB::beginTransaction();
 
-        $purchaseGroup = new PurchaseGroup($request->all());
-        $purchaseGroup->save();
+        $purchaseGroup = PurchaseGroup::query()
+            ->thisWeek()
+            ->byBuyer($request->buyer_id)
+            ->with(['purchases'])
+            ->firstOrCreate([], $request->all())
+        ;
 
         foreach ($request->purchaseRequests as $current) {
             foreach ($current['products'] as $product) {
 
-                if ($product['qty'] > 0) {
+                if (! empty($product['qty'])) {
 
-                    $purchase = new Purchase([
-                        'purchase_group_id' => $purchaseGroup->id,
-                        'product_id' => $product['id'],
-                        'qty' => $product['qty']
-                    ]);
+                    $purchase = $purchaseGroup->purchases->where('product_id', $product['id'])->first();
+
+                    if ($purchase) {
+                        $purchase->qty += $product['qty'];
+                    } else {
+
+                        $purchase = new Purchase([
+                            'purchase_group_id' => $purchaseGroup->id,
+                            'product_id' => $product['id'],
+                            'qty' => $product['qty']
+                        ]);
+                    }
+
                     $purchase->save();
 
                     $purchaseMovement = new PurchaseMovement();

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contract\NumberTrait;
 use App\Contract\SearchTrait;
 use App\Contract\UuidGeneratorTrait;
+use App\Contract\WeekTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,12 +19,15 @@ class PurchaseGroup extends Model
     use SearchTrait;
     use SoftDeletes;
     use NumberTrait;
+    use WeekTrait;
 
     protected $fillable = ['buyer_id'];
 
     protected $search_fields= ['p.model', 'p.description', 'number'];
 
     protected $number_prefix = 'COMPRA-';
+
+    protected $appends = ['status'];
 
     /**
      * PurchaseGroup constructor.
@@ -72,6 +76,16 @@ class PurchaseGroup extends Model
     }
 
     /**
+     * Status
+     *
+     * @return string
+     */
+    public function getStatusAttribute()
+    {
+        return $this->isOpenWeek() ? 'open' : 'closed';
+    }
+
+    /**
      * My purchases
      *
      * @param Builder $query
@@ -105,5 +119,21 @@ class PurchaseGroup extends Model
         }
 
         return $this->_search($query, $search);
+    }
+
+    /**
+     * By buyer
+     *
+     * @param Builder $query
+     * @param int|null $id
+     * @return Builder
+     */
+    public function scopeByBuyer(Builder $query, ?int $id)
+    {
+        if (Auth::check() && Auth::user()->isBuyer()) {
+            $id = Auth::user()->id;
+        }
+
+        return $query->where('buyer_id', $id);
     }
 }
