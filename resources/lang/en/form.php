@@ -24,11 +24,11 @@ return [
     'new' => 'New',
     'addMore' => 'Add more',
     'productForThisModel' => ':attribute products to this model',
-    'approvedProducts' => ':attribute approved products to this seller',
+    'approvedProducts' => ':attribute approved products to this model',
     'detail' => 'Detail',
     'hide' => 'Hide',
     'hasErrors' => 'Has errors',
     'productsByModel' => 'Products by model can not be 0',
-    'assignToSeller' => 'Assign them to the seller',
+    'assignProducts' => 'Assign products',
     'nothingPendingToProcess' => 'Nothing pending to process',
 ];

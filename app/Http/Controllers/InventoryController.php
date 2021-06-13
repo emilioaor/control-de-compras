@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PurchaseMovement;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestGroup;
+use App\Service\AlertService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class InventoryController extends Controller
     /**
      * Inventory list
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
@@ -33,8 +34,12 @@ class InventoryController extends Controller
     {
         $inventory = PurchaseMovement::getInventoryAvailable();
         $purchaseRequests = PurchaseRequestGroup::query()
-            ->whereBetween('created_at', PurchaseRequestGroup::weekRange())
-            ->with(['purchaseRequests.product.sameModel', 'seller'])
+            ->thisWeek()
+            ->with([
+                'purchaseRequests.product.sameModel',
+                'purchaseMovements',
+                'seller'
+            ])
             ->get()
         ;
 
@@ -45,23 +50,25 @@ class InventoryController extends Controller
      * Store distribution
      *
      * @param Request $request
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function storeDistribution(Request $request, $id)
+    public function storeDistribution(Request $request)
     {
         DB::beginTransaction();
 
-        $purchaseRequestGroup = PurchaseRequestGroup::query()->uuid($id)->firstOrFail();
-
         foreach ($request->products as $p) {
-            if ($p['approved'] > 0) {
+            foreach ($p['sellers'] as $s) {
 
-                $movement = new PurchaseMovement();
-                $movement->purchase_request_group_id = $purchaseRequestGroup->id;
-                $movement->qty = $p['approved'] * -1;
-                $movement->product_id = $p['id'];
-                $movement->save();
+                $purchaseRequestGroup = PurchaseRequestGroup::query()->thisWeek()->where('seller_id', $s['id'])->first();
+
+                if (! empty($s['approved'])) {
+
+                    $movement = new PurchaseMovement();
+                    $movement->purchase_request_group_id = $purchaseRequestGroup->id;
+                    $movement->qty = $s['approved'] * -1;
+                    $movement->product_id = $p['id'];
+                    $movement->save();
+                }
             }
         }
 

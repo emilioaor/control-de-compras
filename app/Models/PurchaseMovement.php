@@ -111,6 +111,11 @@ class PurchaseMovement extends Model
             return $current->qty > 0 || $current->ordered > 0;
         });
 
-        return $response;
+        $fixIndex = [];
+        foreach ($response as $current) {
+            $fixIndex[] = $current;
+        }
+
+        return $fixIndex;
     }
 }

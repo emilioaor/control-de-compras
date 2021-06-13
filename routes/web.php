@@ -52,7 +52,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('purchase-request/{purchase_request}/edit', [\App\Http\Controllers\PurchaseRequestController::class, 'edit'])->name('buyer.purchase-request.edit');
         Route::get('inventory', [\App\Http\Controllers\InventoryController::class, 'index'])->name('buyer.inventory.index');
         Route::get('inventory/distribution', [\App\Http\Controllers\InventoryController::class, 'distribution'])->name('buyer.inventory.distribution');
-        Route::post('inventory/distribution/{uuid}', [\App\Http\Controllers\InventoryController::class, 'storeDistribution']);
+        Route::post('inventory/distribution', [\App\Http\Controllers\InventoryController::class, 'storeDistribution']);
     });
 
     Route::group([

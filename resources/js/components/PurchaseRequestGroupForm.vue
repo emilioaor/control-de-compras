@@ -99,6 +99,7 @@
                                                         'bg-danger text-white': product.balance < 0
                                                     }"
                                                 >
+                                                    <span v-if="product.balance > 0">+</span>
                                                     {{ product.balance }}
                                                 </span>
                                                 </td>
@@ -112,17 +113,18 @@
                                         <tr>
                                             <th>{{ t('form.total') }}</th>
                                             <th></th>
-                                            <th class="text-center">{{ formC.products.reduce((total, p) => total += p.ordered, 0) }}</th>
-                                            <th class="text-center">{{ formC.products.reduce((total, p) => total += p.approved, 0) }}</th>
+                                            <th class="text-center">{{ formC.products.reduce((total, p) => total + p.ordered, 0) }}</th>
+                                            <th class="text-center">{{ formC.products.reduce((total, p) => total + p.approved, 0) }}</th>
                                             <th class="text-center">
                                                 <span
                                                     class="d-block rounded p-1 py-2"
                                                     :class="{
-                                                        'bg-success text-white': formC.products.reduce((total, p) => total += p.balance, 0) >= 0,
-                                                        'bg-danger text-white': formC.products.reduce((total, p) => total += p.balance, 0) < 0
+                                                        'bg-success text-white': formC.products.reduce((total, p) => total + p.balance, 0) >= 0,
+                                                        'bg-danger text-white': formC.products.reduce((total, p) => total + p.balance, 0) < 0
                                                     }"
                                                 >
-                                                    {{ formC.products.reduce((total, p) => total += p.balance, 0) }}
+                                                    <span v-if="formC.products.reduce((total, p) => total + p.balance, 0) > 0">+</span>
+                                                    {{ formC.products.reduce((total, p) => total + p.balance, 0) }}
                                                 </span>
                                             </th>
                                         </tr>
@@ -179,8 +181,8 @@
 
         computed: {
             formC() {
-                const ordered = this.form.purchase_requests.reduce((total, pr) => total += pr.qty, 0);
-                const approved = this.form.purchase_movements.reduce((total, pm) => total += pm.qty * -1, 0)
+                const ordered = this.form.purchase_requests.reduce((total, pr) => total + pr.qty, 0);
+                const approved = this.form.purchase_movements.reduce((total, pm) => total + pm.qty * -1, 0)
                 const products = this.form.purchase_requests.map(pr => {
                     return {
                         ...pr.product,

@@ -162,6 +162,7 @@ return [
         'createdAt' => 'Created at',
         'qty' => 'QTY',
         'approved' => 'Approved',
+        'assign' => 'Assign',
         'refused' => 'Refused',
         'status' => 'Status',
         'product' => 'Product',
