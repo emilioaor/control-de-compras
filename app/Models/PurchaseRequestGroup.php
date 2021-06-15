@@ -25,8 +25,6 @@ class PurchaseRequestGroup extends Model
 
     protected $search_fields= ['p.model', 'p.description', 'number'];
 
-    protected $dates = ['processed_at'];
-
     protected $number_prefix = 'ORDEN-';
 
     protected $appends = ['status'];

@@ -31,4 +31,5 @@ return [
     'productsByModel' => 'Products by model can not be 0',
     'assignProducts' => 'Assign products',
     'nothingPendingToProcess' => 'Nothing pending to process',
+    'clickToAssign' => 'Click to assign products',
 ];

@@ -20,14 +20,12 @@
                         <thead>
                         <tr class="bg-header text-white">
                             <th colspan="7">
-                                <i class="fa fa-mobile-phone"></i>
-                                {{ model.model }}
-                                <template v-if="!model.show">
-                                    (<a class="pointer text-white" @click="model.show = !model.show">{{ t('form.detail').toLowerCase() }}</a>)
-                                </template>
-                                <template v-if="model.show">
-                                    (<a class="pointer text-white" @click="model.show = !model.show">{{ t('form.hide').toLowerCase() }}</a>)
-                                </template>
+                                <a class="pointer text-white call-to-click" @click="model.show = !model.show">
+                                    <i class="fa fa-mobile-phone"></i>
+                                    {{ model.model }} -
+
+                                    {{ t('form.clickToAssign') }}
+                                </a>
                             </th>
                         </tr>
                         <tr>
@@ -412,6 +410,24 @@
             height: 30px;
             padding: .4rem;
             font-size: 13px;
+        }
+    }
+    .call-to-click {
+        display: inline-block;
+        animation: callToClick;
+        animation-duration: .4s;
+        animation-iteration-count: 2;
+    }
+
+    @keyframes callToClick {
+        0% {
+            transform: translateY(0) scaleX(1);
+        }
+        50% {
+            transform: translateY(-4px) scaleX(1.03);
+        }
+        100% {
+            transform: translateY(0) scaleX(1);
         }
     }
 </style>
