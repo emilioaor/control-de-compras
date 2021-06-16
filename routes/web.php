@@ -53,6 +53,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('inventory', [\App\Http\Controllers\InventoryController::class, 'index'])->name('buyer.inventory.index');
         Route::get('inventory/distribution', [\App\Http\Controllers\InventoryController::class, 'distribution'])->name('buyer.inventory.distribution');
         Route::post('inventory/distribution', [\App\Http\Controllers\InventoryController::class, 'storeDistribution']);
+        Route::post('inventory/not-found', [\App\Http\Controllers\InventoryController::class, 'markAsNotFound']);
     });
 
     Route::group([

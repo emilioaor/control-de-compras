@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ModelNotFound;
 use App\Models\PurchaseMovement;
-use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestGroup;
-use App\Service\AlertService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +31,7 @@ class InventoryController extends Controller
     public function distribution()
     {
         $inventory = PurchaseMovement::getInventoryAvailable();
+        $modelsNotFound = ModelNotFound::query()->thisWeek()->get();
         $purchaseRequests = PurchaseRequestGroup::query()
             ->thisWeek()
             ->with([
@@ -43,7 +42,7 @@ class InventoryController extends Controller
             ->get()
         ;
 
-        return view('inventory.distribution', compact('purchaseRequests', 'inventory'));
+        return view('inventory.distribution', compact('purchaseRequests', 'inventory', 'modelsNotFound'));
     }
 
     /**
@@ -73,6 +72,26 @@ class InventoryController extends Controller
         }
 
         DB::commit();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Mark model as not found
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function markAsNotFound(Request $request)
+    {
+        $modelNotFound = ModelNotFound::query()->where('model', $request->model)->thisWeek()->first();
+
+        if ($modelNotFound){
+            $modelNotFound->delete();
+        } else {
+            $modelNotFound = new ModelNotFound($request->all());
+            $modelNotFound->save();
+        }
 
         return response()->json(['success' => true]);
     }

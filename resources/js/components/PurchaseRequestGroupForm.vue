@@ -87,7 +87,16 @@
                                     <tbody>
                                         <tr v-for="product in formC.products">
                                             <td>{{ product.upc }}</td>
-                                            <td>{{ product.description }}</td>
+                                            <td>
+                                                {{ product.description }}
+
+                                                <span
+                                                    class="text-danger"
+                                                    v-if="purchaseType === 'purchase-request' && product.markAsNotFound"
+                                                >
+                                                    <strong>({{ t('form.notFound') }})</strong>
+                                                </span>
+                                            </td>
                                             <template v-if="purchaseType === 'purchase-request'">
                                                 <td class="text-center">{{ product.ordered }}</td>
                                                 <td class="text-center">{{ product.approved }}</td>
@@ -153,6 +162,11 @@
                 validator: value => {
                     return value === 'purchase' || value === 'purchase-request'
                 }
+            },
+            modelsNotFound: {
+                type: Array,
+                required: false,
+                default: () => []
             }
         },
         mounted() {
@@ -188,7 +202,8 @@
                         ...pr.product,
                         ordered: pr.qty,
                         approved: 0,
-                        balance: pr.qty * -1
+                        balance: pr.qty * -1,
+                        markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pr.product.model)
                     }
                 });
 
@@ -203,7 +218,8 @@
                             ...pm.product,
                             ordered: 0,
                             approved: pm.qty < 0 ? pm.qty * -1 : pm.qty,
-                            balance: pm.qty < 0 ? pm.qty * -1 : pm.qty
+                            balance: pm.qty < 0 ? pm.qty * -1 : pm.qty,
+                            markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pm.product.model)
                         })
                     }
                 })

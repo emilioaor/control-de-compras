@@ -20,12 +20,18 @@
                         <thead>
                         <tr class="bg-header text-white">
                             <th colspan="7">
-                                <a class="pointer text-white call-to-click" @click="model.show = !model.show">
-                                    <i class="fa fa-mobile-phone"></i>
+                                <i class="fa fa-eye" v-if="model.show"></i>
+                                <i class="fa fa-eye-slash" v-else></i>
+
+                                <a class="pointer text-white call-to-click pl-1" @click="model.show = !model.show">
                                     {{ model.model }} -
 
                                     {{ t('form.clickToAssign') }}
                                 </a>
+
+                                <div class="d-inline-block bg-danger rounded p-1 ml-3" v-if="model.markAsNotFound">
+                                    Not found
+                                </div>
                             </th>
                         </tr>
                         <tr>
@@ -138,14 +144,19 @@
                         </tfoot>
                     </table>
 
-                    <div v-show="model.show">
+                    <div>
+                        <button class="btn btn-info" v-if="! model.show" @click="model.show = true">
+                            <i class="fa fa-eye"></i>
+                            {{ t('form.clickToAssign') }}
+                        </button>
+
                         <i class="spinner-border spinner-border-sm" v-if="loading === i"></i>
 
                         <button-confirmation
                             :label="t('form.assignProducts')"
                             btn-class="btn btn-success"
-                            icon-class="fa fa-mobile-phone"
-                            v-if="loading !== i"
+                            icon-class="fa fa-save"
+                            v-if="loading !== i & model.show"
                             :disabled="loading !== null"
                             :confirmation="t('form.areYouSure')"
                             :buttons="[
@@ -161,6 +172,28 @@
                                 }
                             ]"
                             @confirmed="handleAssignProducts($event, model, i)"
+                        ></button-confirmation>
+
+                        <button-confirmation
+                            :label="model.markAsNotFound ? t('form.markAsFound') : t('form.markAsNotFound')"
+                            :btn-class="model.markAsNotFound ? 'btn btn-warning' : 'btn btn-danger'"
+                            :icon-class="model.markAsNotFound ? '' : 'fa fa-remove'"
+                            v-if="loading !== i & model.show"
+                            :disabled="loading !== null"
+                            :confirmation="t('form.notFoundExplanation')"
+                            :buttons="[
+                                {
+                                    label: t('form.yes'),
+                                    btnClass: 'btn btn-success',
+                                    code: 'yes'
+                                },
+                                {
+                                    label: t('form.no'),
+                                    btnClass: 'btn btn-danger',
+                                    code: 'no'
+                                }
+                            ]"
+                            @confirmed="handleNotFound($event, model, i)"
                         ></button-confirmation>
                     </div>
 
@@ -185,6 +218,10 @@
             inventories: {
                 type: Array,
                 required: true
+            },
+            modelsNotFound: {
+                type: Array,
+                required: true
             }
         },
 
@@ -192,6 +229,9 @@
             return {
                 inventory: this.inventories.map(inv => {
                     return {...inv}
+                }),
+                modelsNF: this.modelsNotFound.map(mnf => {
+                   return {...mnf}
                 }),
                 form: {
                     productsByModel: []
@@ -237,6 +277,7 @@
                         productsByModel.push({
                             model: pr.product.model,
                             show: false,
+                            markAsNotFound: this.modelsNF.some(mnf => mnf.model === pr.product.model),
                             qty: products.reduce((total, p) => total + p.qty, 0),
                             products: [
                                 ...products
@@ -368,6 +409,26 @@
                 }
 
             },
+
+            handleNotFound(code, model, index) {
+                if (code === 'yes') {
+                    this.loading = index;
+
+                    ApiService.post('/buyer/inventory/not-found', {
+                        model: model.model
+                    }).then(res => {
+
+                        if (res.data.success) {
+
+                            const pbm = this.form.productsByModel.find(pbm =>  pbm.model === model.model)
+                            pbm.markAsNotFound = ! pbm.markAsNotFound;
+                            this.loading = null;
+                        }
+                    }).catch(err => {
+                        this.loading = null;
+                    })
+                }
+            },
         }
     }
 </script>
@@ -414,7 +475,7 @@
     }
     .call-to-click {
         display: inline-block;
-        animation: callToClick;
+        //animation: callToClick;
         animation-duration: .4s;
         animation-iteration-count: 2;
     }

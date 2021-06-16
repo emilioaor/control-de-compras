@@ -29,7 +29,11 @@ return [
     'hide' => 'Hide',
     'hasErrors' => 'Has errors',
     'productsByModel' => 'Products by model can not be 0',
-    'assignProducts' => 'Assign products',
+    'assignProducts' => 'Save product assignment',
     'nothingPendingToProcess' => 'Nothing pending to process',
     'clickToAssign' => 'Click to assign products',
+    'notFound' => 'Not found',
+    'markAsNotFound' => 'Mark as not found',
+    'markAsFound' => 'Mark as found',
+    'notFoundExplanation' => 'This indicates that no more products of this model arrive during this week. Are you sure?',
 ];
