@@ -19,7 +19,7 @@
                     <table class="table table-bordered table-responsive-sm">
                         <thead>
                         <tr class="bg-header text-white">
-                            <th colspan="7">
+                            <th colspan="8">
                                 <i class="fa fa-eye" v-if="model.show"></i>
                                 <i class="fa fa-eye-slash" v-else></i>
 
@@ -30,12 +30,13 @@
                                 </a>
 
                                 <div class="d-inline-block bg-danger rounded p-1 ml-3" v-if="model.markAsNotFound">
-                                    Not found
+                                    {{ t('form.notFound') }}
                                 </div>
                             </th>
                         </tr>
                         <tr>
                             <th class="py-1">{{ t('validation.attributes.seller') }}</th>
+                            <th width="5%" class="text-center py-1 bg-important">{{ t('form.important') }}</th>
                             <th width="10%" class="text-center py-1 bg-ordered">{{ t('validation.attributes.ordered') }}</th>
                             <th width="5%" class="text-center py-1 bg-ordered">%</th>
                             <th width="10%" class="text-center py-1 bg-available">{{ t('validation.attributes.available') }}</th>
@@ -50,7 +51,8 @@
                             v-if="product.hasInventory || product.qty > 0 || getApprovedThisWeekByProduct(product) > 0"
                         >
                             <tr class="tr-title-product">
-                                <td class="py-0">{{ product.description }}</td>
+                                <td class="py-0">{{ product.upc }} / {{ product.description }}</td>
+                                <td></td>
                                 <td class="text-center">
                                     <template v-if="! model.show">
                                         {{ product.qty }}
@@ -84,6 +86,9 @@
                             </tr>
                             <tr v-show="model.show" v-for="(seller, iii) in product.sellers">
                                 <td>{{ seller.name }}</td>
+                                <td class="text-center bg-important">
+                                    {{ seller.important ? t('form.yes') : t('form.no') }}
+                                </td>
                                 <td class="text-center bg-ordered">
                                     {{ seller.qty }}
                                 </td>
@@ -126,6 +131,7 @@
                         <tfoot>
                         <tr>
                             <th class="py-1">{{ t('form.total') }}</th>
+                            <th class="bg-important"></th>
                             <th class="text-center py-1 bg-ordered">
                                 {{ model.qty }}
                             </th>
@@ -256,6 +262,7 @@
                                         ...prg2.seller,
                                         qty: prg2.purchase_requests.find(pr => pr.product_id === p.id)?.qty ?? 0,
                                         approved: null,
+                                        important: prg.id === prg2.id && pr.important && pr.product_id === p.id,
                                         approvedThisWeek: (
                                             prg2.purchase_movements
                                                 .filter(pm => pm.product_id === p.id)
@@ -455,6 +462,9 @@
                 }
             }
         }
+    }
+    .bg-important {
+        background-color: #ffe9ad;
     }
     .bg-ordered {
         background-color: #d4ffd1;

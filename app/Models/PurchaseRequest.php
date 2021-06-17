@@ -16,7 +16,7 @@ class PurchaseRequest extends Model
     use UuidGeneratorTrait;
     use SearchTrait;
 
-    protected $fillable = ['product_id', 'qty', 'approved', 'purchase_request_group_id'];
+    protected $fillable = ['product_id', 'qty', 'approved', 'purchase_request_group_id', 'important'];
 
     protected $search_fields= ['products.model', 'products.description'];
 

@@ -140,7 +140,10 @@
                 window.setTimeout(this.focusFilter, 500);
                 this.results = [];
 
-                ApiService.get(this.route + '?search=' + this.search).then(res => {
+                const separator = this.route.indexOf('?') > 0 ? '&' : '?';
+                const route = this.route + separator + 'search=' + this.search;
+
+                ApiService.get(route).then(res => {
 
                     this.results = res.data.data.data.map(current => {
                         let description = '';

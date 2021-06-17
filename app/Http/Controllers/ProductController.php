@@ -125,7 +125,13 @@ class ProductController extends Controller
      */
     public function models(Request $request)
     {
-        $models = Product::query()->select('model')->model($request->search)->groupBy('model')->paginate();
+        $models = Product::query()
+            ->select('model')
+            ->model($request->search)
+            ->whereNotIn('model', $request->notIn ? explode(',', $request->notIn) : [])
+            ->groupBy('model')
+            ->paginate()
+        ;
 
         return response()->json(['success' => true, 'data' => $models]);
     }

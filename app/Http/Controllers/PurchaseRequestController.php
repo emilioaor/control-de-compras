@@ -69,12 +69,14 @@ class PurchaseRequestController extends Controller
 
                     if ($purchaseRequest) {
                         $purchaseRequest->qty += $product['qty'];
+                        $purchaseRequest->important = $product['important'];
                     } else {
 
                         $purchaseRequest = new PurchaseRequest([
                             'purchase_request_group_id' => $purchaseRequestGroup->id,
                             'product_id' => $product['id'],
-                            'qty' => $product['qty']
+                            'qty' => $product['qty'],
+                            'important' => $product['important']
                         ]);
                     }
 

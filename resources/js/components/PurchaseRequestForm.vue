@@ -72,7 +72,8 @@
 
                             <div class="flex-grow-1 col-sm-6 col-md-4">
                                 <search-input
-                                    route="/buy/product/models"
+                                    :route="'/buy/product/models?notIn=' + form.purchaseRequests.map(map => map.model).join(',')"
+                                    ref="searchModel"
                                     :description-fields="['model']"
                                     @selectResult="changeModel($event, i)"
                                     :input-class="errors.has('model' + i) ? 'is-invalid' : ''"
@@ -133,6 +134,7 @@
                                     </div>
 
                                     <div class="ml-2 d-flex align-items-center">
+                                        {{ product.upc }} /
                                         {{ product.description }}
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -150,6 +152,28 @@
                                                 {{ t('validation.required', {attribute: 'qty'}) }}
                                             </strong>
                                         </span>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="d-flex align-items-center mt-3 mt-md-0">
+                                            <div>
+                                                {{ t('form.important') }}
+                                            </div>
+
+                                            <div
+                                                class="custom-checkbox text-white d-flex justify-content-start ml-2"
+                                                @click="product.important = !product.important"
+                                                :class="{
+                                                    'justify-content-end': product.important
+                                                }"
+                                            >
+                                                <div v-if="product.important" class="bg-success ">
+                                                    {{ t('form.yes') }}
+                                                </div>
+                                                <div v-else class="bg-danger">
+                                                    {{ t('form.no') }}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </template>
@@ -282,6 +306,10 @@
                     show: true,
                     products: []
                 })
+
+                if (this.form.purchaseRequests.length > 1) {
+                    window.setTimeout(() => this.$refs.searchModel[this.form.purchaseRequests.length - 1].openModal());
+                }
             },
 
             removeRequest(index) {
@@ -299,7 +327,8 @@
                         this.form.purchaseRequests[index].products = res.data.data.map(p => {
                             return  {
                                 ...p,
-                                qty: null
+                                qty: null,
+                                important: false
                             }
                         });
 
@@ -328,5 +357,18 @@
 <style lang="scss" scoped>
     .card-product {
         border: solid 1px rgba(0,0,0, .3);
+    }
+    .custom-checkbox {
+        width: 88px;
+        border: solid 1px #ccc;
+        border-radius: 20px;
+        cursor: pointer;
+        padding: .2rem;
+        background-color: #cddd;
+
+        div {
+            padding: .3rem .4rem;
+            border-radius: 50%;
+        }
     }
 </style>

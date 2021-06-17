@@ -75,6 +75,7 @@
                                             <th>{{ t('validation.attributes.upc') }}</th>
                                             <th>{{ t('validation.attributes.description') }}</th>
                                             <template v-if="purchaseType === 'purchase-request'">
+                                                <th class="text-center">{{ t('form.important') }}</th>
                                                 <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
                                                 <th class="text-center">{{ t('validation.attributes.approved') }}</th>
                                                 <th width="5%" class="text-center">{{ t('validation.attributes.balance') }}</th>
@@ -98,6 +99,7 @@
                                                 </span>
                                             </td>
                                             <template v-if="purchaseType === 'purchase-request'">
+                                                <td class="text-center">{{ product.important ? t('form.yes') : t('form.no') }}</td>
                                                 <td class="text-center">{{ product.ordered }}</td>
                                                 <td class="text-center">{{ product.approved }}</td>
                                                 <td class="text-center">
@@ -121,6 +123,7 @@
                                     <tfoot v-if="purchaseType === 'purchase-request'">
                                         <tr>
                                             <th>{{ t('form.total') }}</th>
+                                            <th></th>
                                             <th></th>
                                             <th class="text-center">{{ formC.products.reduce((total, p) => total + p.ordered, 0) }}</th>
                                             <th class="text-center">{{ formC.products.reduce((total, p) => total + p.approved, 0) }}</th>
@@ -203,7 +206,8 @@
                         ordered: pr.qty,
                         approved: 0,
                         balance: pr.qty * -1,
-                        markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pr.product.model)
+                        markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pr.product.model),
+                        important: pr.important
                     }
                 });
 
@@ -219,7 +223,8 @@
                             ordered: 0,
                             approved: pm.qty < 0 ? pm.qty * -1 : pm.qty,
                             balance: pm.qty < 0 ? pm.qty * -1 : pm.qty,
-                            markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pm.product.model)
+                            markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pm.product.model),
+                            important: false
                         })
                     }
                 })
