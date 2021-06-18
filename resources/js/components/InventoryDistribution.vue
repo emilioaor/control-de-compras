@@ -19,7 +19,7 @@
                     <table class="table table-bordered table-responsive-sm">
                         <thead>
                         <tr class="bg-header text-white">
-                            <th colspan="8">
+                            <th colspan="9">
                                 <i class="fa fa-eye" v-if="model.show"></i>
                                 <i class="fa fa-eye-slash" v-else></i>
 
@@ -36,7 +36,8 @@
                         </tr>
                         <tr>
                             <th class="py-1">{{ t('validation.attributes.seller') }}</th>
-                            <th width="5%" class="text-center py-1 bg-important">{{ t('form.important') }}</th>
+                            <th width="5%" class="text-center py-1 bg-important">{{ t('validation.attributes.note') }}</th>
+                            <th width="5%" class="text-center py-1 bg-important">{{ t('validation.attributes.important') }}</th>
                             <th width="10%" class="text-center py-1 bg-ordered">{{ t('validation.attributes.ordered') }}</th>
                             <th width="5%" class="text-center py-1 bg-ordered">%</th>
                             <th width="10%" class="text-center py-1 bg-available">{{ t('validation.attributes.available') }}</th>
@@ -52,6 +53,7 @@
                         >
                             <tr class="tr-title-product">
                                 <td class="py-0">{{ product.upc }} / {{ product.description }}</td>
+                                <td></td>
                                 <td></td>
                                 <td class="text-center">
                                     <template v-if="! model.show">
@@ -86,6 +88,19 @@
                             </tr>
                             <tr v-show="model.show" v-for="(seller, iii) in product.sellers">
                                 <td>{{ seller.name }}</td>
+                                <td class="text-center bg-important">
+                                    <template v-if="seller.note">
+                                        <i
+                                            @click="noteSelected = seller.note"
+                                            class="fa fa-list-alt pointer"
+                                            data-toggle="modal"
+                                            data-target="#noteModal"
+                                        ></i>
+                                    </template>
+                                    <template v-else>
+                                        -
+                                    </template>
+                                </td>
                                 <td class="text-center bg-important">
                                     {{ seller.important ? t('form.yes') : t('form.no') }}
                                 </td>
@@ -131,6 +146,7 @@
                         <tfoot>
                         <tr>
                             <th class="py-1">{{ t('form.total') }}</th>
+                            <th class="bg-important"></th>
                             <th class="bg-important"></th>
                             <th class="text-center py-1 bg-ordered">
                                 {{ model.qty }}
@@ -208,6 +224,22 @@
 
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <textarea cols="30" rows="5" class="form-control" v-model="noteSelected"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ t('form.close') }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -242,7 +274,8 @@
                 form: {
                     productsByModel: []
                 },
-                loading: null
+                loading: null,
+                noteSelected: null
             }
         },
 
@@ -262,7 +295,8 @@
                                         ...prg2.seller,
                                         qty: prg2.purchase_requests.find(pr => pr.product_id === p.id)?.qty ?? 0,
                                         approved: null,
-                                        important: prg.id === prg2.id && pr.important && pr.product_id === p.id,
+                                        important: prg2.purchase_requests.find(pr => pr.product_id === p.id)?.important ?? false,
+                                        note: prg2.purchase_requests.find(pr => pr.product_id === p.id)?.note,
                                         approvedThisWeek: (
                                             prg2.purchase_movements
                                                 .filter(pm => pm.product_id === p.id)

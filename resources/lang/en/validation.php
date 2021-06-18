@@ -173,7 +173,9 @@ return [
         'available' => 'Available',
         'balance' => 'Balance',
         'processedAt' => 'Processed at',
-        'number' => 'Number'
+        'number' => 'Number',
+        'note' => 'Note',
+        'important' => 'Important'
     ],
 
 ];

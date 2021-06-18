@@ -21,6 +21,7 @@ class CreatePurchaseRequestsTable extends Migration
             $table->integer('qty');
             $table->integer('approved')->nullable();
             $table->boolean('important');
+            $table->text('note')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

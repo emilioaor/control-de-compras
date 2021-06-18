@@ -76,7 +76,8 @@ class PurchaseRequestController extends Controller
                             'purchase_request_group_id' => $purchaseRequestGroup->id,
                             'product_id' => $product['id'],
                             'qty' => $product['qty'],
-                            'important' => $product['important']
+                            'important' => $product['important'],
+                            'note' => $product['note'],
                         ]);
                     }
 
