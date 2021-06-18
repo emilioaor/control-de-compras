@@ -110,13 +110,13 @@
                                         <input type="hidden" :name="'productsByModel' + i" v-validate data-vv-rules="required" v-if="purchaseRequests[i].model && purchaseRequests[i].qty === 0">
                                     </td>
                                 </tr>
-                                <tr v-if="loadingModel">
+                                <tr v-if="pr.model && loadingModel === pr.model">
                                     <td colspan="5">
                                         <i class="spinner-border spinner-border-sm"></i>
                                     </td>
                                 </tr>
                                 <tr
-                                    v-if="!loadingModel"
+                                    v-else
                                     v-for="(product, ii) in pr.products"
                                 >
                                     <td class="text-center">{{ product.upc }}</td>
