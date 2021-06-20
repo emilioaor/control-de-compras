@@ -1,15 +1,18 @@
 <?php
 
 return [
-
-    'addNew' => 'Add new',
-    'list' => 'List',
+    'addUser' => 'Add user',
     'users' => 'Users',
     'security' => 'Security',
+    'addProduct' => 'Add product',
     'products' => 'Products',
-    'purchaseRequests' => 'Purchase requests',
+    'addPurchaseRequest' => 'Add order',
+    'purchaseRequests' => 'Orders',
+    'addPurchase' => 'Add purchase',
     'purchases' => 'Purchases',
     'inventory' => 'Inventory',
     'inventoryDistribution' => 'Inventory distribution',
-
+    'addSupplier' => 'Add supplier',
+    'suppliers' => 'Suppliers',
+    'management' => 'Management'
 ];

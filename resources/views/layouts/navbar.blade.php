@@ -3,32 +3,37 @@
     <ul class="navbar-nav mr-auto">
         @auth
             @include('layouts.navbar-item', [
-                    'label' => __('menu.users'),
-                    'show' => Auth::user()->isAdmin(),
+                    'label' => __('menu.management'),
+                    'show' => Auth::user()->isAdmin() || Auth::user()->isBuyer(),
                     'items' => [
                         [
-                            'label' => __('menu.addNew'),
+                            'show' => Auth::user()->isAdmin(),
+                            'label' => __('menu.addUser'),
                             'route' => route('user.create'),
                         ],
                         [
-                            'label' => __('menu.list'),
+                            'show' => Auth::user()->isAdmin(),
+                            'label' => __('menu.users'),
                             'route' => route('user.index'),
-                        ]
-                    ]
-                ])
-
-            @include('layouts.navbar-item', [
-                    'label' => __('menu.products'),
-                    'show' => Auth::user()->isAdmin(),
-                    'items' => [
+                        ],
                         [
-                            'label' => __('menu.addNew'),
+                            'show' => Auth::user()->isAdmin(),
+                            'label' => __('menu.addProduct'),
                             'route' => route('product.create'),
                         ],
                         [
-                            'label' => __('menu.list'),
+                            'show' => Auth::user()->isAdmin(),
+                            'label' => __('menu.products'),
                             'route' => route('product.index'),
-                        ]
+                        ],
+                        [
+                            'label' => __('menu.addSupplier'),
+                            'route' => route('supplier.create'),
+                        ],
+                        [
+                            'label' => __('menu.suppliers'),
+                            'route' => route('supplier.index'),
+                        ],
                     ]
                 ])
 
@@ -38,17 +43,17 @@
                     'items' => [
                         [
                             'show' => Auth::user()->isAdmin() || Auth::user()->isSeller(),
-                            'label' => __('menu.addNew'),
+                            'label' => __('menu.addPurchaseRequest'),
                             'route' => route('purchase-request.create'),
                         ],
                         [
                             'show' => Auth::user()->isAdmin() || Auth::user()->isSeller(),
-                            'label' => __('menu.list'),
+                            'label' => __('menu.purchaseRequests'),
                             'route' => route('purchase-request.index'),
                         ],
                         [
                             'show' => Auth::user()->isBuyer(),
-                            'label' => __('menu.list'),
+                            'label' => __('menu.purchaseRequests'),
                             'route' => route('buyer.purchase-request.index'),
                         ]
                     ]
@@ -59,11 +64,11 @@
                     'show' => Auth::user()->isAdmin() || Auth::user()->isBuyer(),
                     'items' => [
                         [
-                            'label' => __('menu.addNew'),
+                            'label' => __('menu.addPurchase'),
                             'route' => route('purchase.create'),
                         ],
                         [
-                            'label' => __('menu.list'),
+                            'label' => __('menu.purchases'),
                             'route' => route('purchase.index'),
                         ],
                         [

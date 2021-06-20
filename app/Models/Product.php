@@ -61,6 +61,16 @@ class Product extends Model
     }
 
     /**
+     * Product prices
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function productPrices()
+    {
+        return $this->hasMany(ProductPrice::class);
+    }
+
+    /**
      * Scope model
      *
      * @param Builder $query
