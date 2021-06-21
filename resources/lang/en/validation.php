@@ -176,7 +176,9 @@ return [
         'number' => 'Number',
         'note' => 'Note',
         'important' => 'Important',
-        'price' => 'Price'
+        'price' => 'Price',
+        'supplier' => 'Supplier',
+        'file' => 'File'
     ],
 
 ];

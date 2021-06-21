@@ -2,32 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Supplier;
+use App\Models\ProductPrice;
 use App\Service\AlertService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
-class SupplierController extends Controller
+class ProductPriceController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $suppliers = Supplier::query()
-            ->search($request->search)
-            ->latest()
-            ->paginate()
-        ;
-
-        if ($request->wantsJson()) {
-            return response()->json(['success' => true, 'data' => $suppliers]);
-        }
-
-        return view('supplier.index', compact('suppliers'));
+        //
     }
 
     /**
@@ -37,7 +26,7 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        return view('supplier.form');
+        return view('productPrice.form');
     }
 
     /**
@@ -48,14 +37,25 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(['name' => 'unique:suppliers'], $request->all());
+        DB::beginTransaction();
 
-        $supplier = new Supplier($request->all());
-        $supplier->save();
+        if ($request->type === 'file') {
+
+            $load = ProductPrice::loadFile($request->file, $request->supplier_id);
+
+            if (! $load['success']) {
+                return response()->json(['success' => false, 'errors' => $load['errors'], 'line' => $load['line']], 400);
+            }
+
+        } elseif ($request->type === 'by_product') {
+
+        }
+
+        DB::commit();
 
         AlertService::alertSuccess(__('alert.processSuccessfully'));
 
-        return response()->json(['success' => true, 'redirect' => route('supplier.index')]);
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -77,9 +77,7 @@ class SupplierController extends Controller
      */
     public function edit($id)
     {
-        $supplier = Supplier::query()->uuid($id)->firstOrFail();
-
-        return view('supplier.form', compact('supplier'));
+        //
     }
 
     /**
@@ -87,20 +85,11 @@ class SupplierController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $supplier = Supplier::query()->uuid($id)->firstOrFail();
-
-        $request->validate(['name' => Rule::unique('suppliers')->ignore($supplier)], $request->all());
-
-        $supplier->fill($request->all());
-        $supplier->save();
-
-        AlertService::alertSuccess(__('alert.processSuccessfully'));
-
-        return response()->json(['success' => true, 'redirect' => route('supplier.edit', [$id])]);
+        //
     }
 
     /**

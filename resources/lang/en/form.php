@@ -37,5 +37,10 @@ return [
     'markAsFound' => 'Mark as found',
     'notFoundExplanation' => 'This indicates that no more products of this model arrive during this week. Are you sure?',
     'addNote' => 'Add note',
-    'download' => 'Download'
+    'download' => 'Download',
+    'downloadFile' => 'Download file',
+    'loadFile' => 'Load file',
+    'pricesByProduct' => 'Prices by product',
+    'line' => 'Line',
+    'errors' => 'Errors'
 ];

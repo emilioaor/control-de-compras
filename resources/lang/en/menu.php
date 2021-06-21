@@ -16,5 +16,6 @@ return [
     'suppliers' => 'Suppliers',
     'management' => 'Management',
     'reports' => 'Reports',
-    'productReport' => 'Product report'
+    'productReport' => 'Product report',
+    'purchasePrice' => 'Purchase price'
 ];

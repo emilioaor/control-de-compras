@@ -127,8 +127,8 @@
             downloadRoute() {
                 let route = '/buyer/download/product';
 
-                route += (this.form.model ? '&model=' + this.form.model : '')
-                route += (this.form.upc ? '&upc=' + this.form.upc : '')
+                route += (this.form.model ? '&model=' + this.form.model : '');
+                route += (this.form.upc ? '&upc=' + this.form.upc : '');
                 route = route.replace('&', '?');
 
                 return route;

@@ -78,6 +78,10 @@
                         [
                             'label' => __('menu.inventoryDistribution'),
                             'route' => route('buyer.inventory.distribution'),
+                        ],
+                        [
+                            'label' => __('menu.purchasePrice'),
+                            'route' => route('product-price.create'),
                         ]
                     ]
                 ])

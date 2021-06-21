@@ -3,8 +3,12 @@
 namespace App\Models;
 
 use App\Contract\WeekTrait;
+use App\Exceptions\ProductPriceImportException;
+use App\Imports\ProductPriceImport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductPrice extends Model
 {
@@ -31,5 +35,32 @@ class ProductPrice extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class)->withTrashed();
+    }
+
+    /**
+     * Load prices file
+     *
+     * @param $base64
+     * @param $supplierId
+     * @return array|bool[]
+     */
+    public static function loadFile($base64, $supplierId)
+    {
+        try {
+            $supplier = Supplier::find($supplierId);
+
+            $explode = explode(',', $base64);
+            $filename = sprintf('%s-%s', 'product-price', ((string) time()));
+            $format = 'xlsx';
+
+            $path = sprintf('product-prices/%s/%s.%s', $supplierId, $filename, $format);
+            Storage::disk('public')->put($path, base64_decode($explode[1]));
+
+            Excel::import(new ProductPriceImport($supplier), storage_path('app/public/' . $path));
+        } catch (ProductPriceImportException $ex) {
+            return ['success' => false, 'errors' => $ex->getErrors(), 'line' => $ex->getFileLine()];
+        }
+
+        return ['success' => true];
     }
 }
