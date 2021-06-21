@@ -175,7 +175,8 @@ return [
         'processedAt' => 'Processed at',
         'number' => 'Number',
         'note' => 'Note',
-        'important' => 'Important'
+        'important' => 'Important',
+        'price' => 'Price'
     ],
 
 ];

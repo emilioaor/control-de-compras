@@ -85,4 +85,24 @@ class Product extends Model
 
         return $query;
     }
+
+    /**
+     * Scope report
+     *
+     * @param Builder $query
+     * @param array $filters
+     * @return Builder
+     */
+    public function scopeReport(Builder $query, array $filters)
+    {
+        if (isset($filters['upc'])) {
+            $query->where('upc', $filters['upc']);
+        }
+
+        if (isset($filters['model'])) {
+            $query->where('model', $filters['model']);
+        }
+
+        return $query->orderBy('model')->orderBy('description');
+    }
 }

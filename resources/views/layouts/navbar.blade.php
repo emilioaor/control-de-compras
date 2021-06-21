@@ -81,6 +81,17 @@
                         ]
                     ]
                 ])
+
+            @include('layouts.navbar-item', [
+                    'label' => __('menu.reports'),
+                    'show' => Auth::user()->isAdmin() || Auth::user()->isBuyer(),
+                    'items' => [
+                        [
+                            'label' => __('menu.productReport'),
+                            'route' => route('report.product'),
+                        ],
+                    ]
+                ])
         @endauth
     </ul>
 

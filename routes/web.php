@@ -55,6 +55,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('inventory/distribution', [\App\Http\Controllers\InventoryController::class, 'storeDistribution']);
         Route::post('inventory/not-found', [\App\Http\Controllers\InventoryController::class, 'markAsNotFound']);
         Route::resource('supplier', \App\Http\Controllers\SupplierController::class);
+        Route::get('report/product', [\App\Http\Controllers\ReportController::class, 'product'])->name('report.product');
+        Route::post('report/product', [\App\Http\Controllers\ReportController::class, 'productData']);
+        Route::get('download/product', [\App\Http\Controllers\ReportController::class, 'productDownload'])->name('download.product');
     });
 
     Route::group([

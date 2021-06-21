@@ -20,7 +20,7 @@
                                 class="form-control"
                                 :class="{'is-invalid': errors.has('name') || exists}"
                                 v-model="form.name"
-                                maxlength="20"
+                                maxlength="255"
                                 v-validate
                                 data-vv-rules="required"
                             >
@@ -99,8 +99,6 @@
                     ApiService.put('/buyer/supplier/' + this.form.uuid, this.form) :
                     ApiService.post('/buyer/supplier', this.form)
                 ;
-
-                this.loading = true;
 
                 apiService.then(res => {
 

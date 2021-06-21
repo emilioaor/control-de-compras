@@ -36,5 +36,6 @@ return [
     'markAsNotFound' => 'Mark as not found',
     'markAsFound' => 'Mark as found',
     'notFoundExplanation' => 'This indicates that no more products of this model arrive during this week. Are you sure?',
-    'addNote' => 'Add note'
+    'addNote' => 'Add note',
+    'download' => 'Download'
 ];

@@ -14,5 +14,7 @@ return [
     'inventoryDistribution' => 'Inventory distribution',
     'addSupplier' => 'Add supplier',
     'suppliers' => 'Suppliers',
-    'management' => 'Management'
+    'management' => 'Management',
+    'reports' => 'Reports',
+    'productReport' => 'Product report'
 ];
