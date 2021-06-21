@@ -63,4 +63,30 @@ class ProductPrice extends Model
 
         return ['success' => true];
     }
+
+    /**
+     * Update prices
+     *
+     * @param $prices
+     */
+    public static function updatePrices($prices)
+    {
+        foreach ($prices as $pp) {
+            if (! empty($pp['price'])) {
+
+                $productPrice = ProductPrice::query()
+                    ->thisWeek()
+                    ->where('supplier_id', $pp['supplier_id'])
+                    ->where('product_id', $pp['product_id'])
+                    ->firstOrNew([
+                        'supplier_id' => $pp['supplier_id'],
+                        'product_id' => $pp['product_id']
+                    ])
+                ;
+
+                $productPrice->price = $pp['price'];
+                $productPrice->save();
+            }
+        }
+    }
 }

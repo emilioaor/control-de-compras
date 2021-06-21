@@ -24,22 +24,22 @@
                         </div>
                     </div>
 
-                    <ul class="nav nav-tabs mb-3">
-                        <li class="nav-item">
-                            <a
-                                class="nav-link pointer"
-                                :class="{active: form.type === 'file'}"
-                                @click="form.type = 'file'">{{ t('form.loadFile') }}</a>
-                        </li>
+                    <ul class="nav nav-tabs mb-3" v-if="form.supplier">
                         <li class="nav-item">
                             <a
                                 class="nav-link pointer"
                                 :class="{active: form.type === 'by_product'}"
-                                @click="form.type = 'by_product'">{{ t('form.pricesByProduct') }}</a>
+                                @click="changeType('by_product')">{{ t('form.pricesByProduct') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link pointer"
+                                :class="{active: form.type === 'file'}"
+                                @click="changeType('file')">{{ t('form.loadFile') }}</a>
                         </li>
                     </ul>
 
-                    <div class="row px-3">
+                    <div class="row px-3" v-if="form.supplier">
                         <template v-if="form.type === 'file'">
 
                             <div class="col-12 form-group">
@@ -63,17 +63,102 @@
                                 >
 
                                 <span class="invalid-feedback" role="alert" v-if="errors.firstByRule('file', 'required')">
-                                <strong>{{ t('validation.required', {attribute: 'file'}) }}</strong>
-                            </span>
+                                    <strong>{{ t('validation.required', {attribute: 'file'}) }}</strong>
+                                </span>
 
                                 <span class="invalid-feedback" role="alert" v-if="errors.firstByRule('file', 'mimes')">
-                                <strong>{{ t('validation.mimes', {attribute: 'file', values: 'Excel'}) }}</strong>
-                            </span>
+                                    <strong>{{ t('validation.mimes', {attribute: 'file', values: 'Excel'}) }}</strong>
+                                </span>
                             </div>
                         </template>
 
                         <template v-if="form.type === 'by_product'">
+                            <div class="col-12" v-if="loadingProducts">
+                                <i class="spinner-border spinner-border-sm"></i>
+                            </div>
 
+                            <div class="col-12" v-else>
+
+                                <table class="table table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ t('validation.attributes.product') }}</th>
+                                            <th></th>
+                                            <th class="text-center">{{ t('validation.attributes.currentPrice') }}</th>
+                                            <th class="text-center">{{ t('validation.attributes.priceDate') }}</th>
+                                            <th width="15%" class="text-center">{{ t('validation.attributes.price') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(productPrice, i) in form.products">
+                                            <td>
+                                                <template v-if="productPrice.isNew">
+                                                    <search-input
+                                                        :route="'/buy/product?notIn=' + productSelectedIds"
+                                                        :description-fields="['upc', 'description']"
+                                                        @selectResult="changeProduct($event, i)"
+                                                        :value="productPrice.product ? productPrice.product.upc + ' / ' + productPrice.product.description : ''"
+                                                    ></search-input>
+                                                </template>
+
+                                                <template v-else>
+                                                    {{ productPrice.product.upc }} / {{ productPrice.product.description }}
+                                                </template>
+                                            </td>
+                                            <td>
+                                                <template v-if="productPrice.isNew">
+                                                    <button class="btn btn-danger" @click="removeProduct(i)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </template>
+                                            </td>
+                                            <td class="text-center">
+                                                <template v-if="productPrice.currentPrice">
+                                                    {{ productPrice.currentPrice }}
+                                                </template>
+                                                <template v-else>
+                                                    -
+                                                </template>
+                                            </td>
+                                            <td class="text-center">
+                                                <template v-if="productPrice.updated_at">
+                                                    {{ productPrice.updated_at | date }}
+                                                </template>
+                                                <template v-else>
+                                                    -
+                                                </template>
+                                            </td>
+                                            <td class="text-center">
+                                                <input
+                                                    type="number"
+                                                    :name="'price' + i"
+                                                    class="form-control"
+                                                    :class="{'is-invalid': errors.has('price' + i)}"
+                                                    v-model="productPrice.price"
+                                                    v-validate
+                                                    :data-vv-rules="productPrice.isNew ? 'required' : ''"
+                                                >
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <search-input
+                                                    :route="'/buy/product?notIn=' + productSelectedIds"
+                                                    :description-fields="['upc', 'description']"
+                                                    @selectResult="addProduct($event)"
+                                                    :value="''"
+                                                ></search-input>
+                                            </td>
+                                            <td></td>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </template>
                     </div>
                 </div>
@@ -136,11 +221,13 @@
         data() {
             return {
                 loading: false,
+                loadingProducts: false,
                 form: {
                     supplier: null,
                     supplier_id: null,
-                    type: 'file',
-                    file: null
+                    type: 'by_product',
+                    file: null,
+                    products: []
                 },
                 modal: {
                     errors: [],
@@ -160,7 +247,9 @@
 
                 ApiService.post('/buyer/product-price', this.form).then(res => {
 
-                    location.reload();
+                    if (res.data.success) {
+                        location.reload();
+                    }
 
                 }).catch(err => {
                     this.loading = false;
@@ -175,6 +264,8 @@
             changeSupplier(supplier) {
                 this.form.supplier = supplier;
                 this.form.supplier_id = supplier.id;
+                this.form.type = null;
+                this.changeType('by_product');
             },
 
             changeFile() {
@@ -194,6 +285,64 @@
 
                 reader.readAsDataURL(file);
             },
+
+            changeType(type) {
+                if (this.form.type !== type) {
+
+                    this.form.products = [];
+                    this.form.type = type;
+
+                    if (type === 'by_product') {
+                        this.getProducts();
+                    }
+                }
+            },
+
+            getProducts() {
+                this.loadingProducts = true;
+
+                ApiService.get('/buyer/product-price/' + this.form.supplier.uuid).then(res => {
+                    this.form.products = [
+                        ...res.data.data.map(productPrice => {
+                            return {
+                                ...productPrice,
+                                currentPrice: productPrice.price,
+                                price: null,
+                                isNew: false
+                            }
+                        })
+                    ];
+                    this.loadingProducts = false;
+                }).catch(err => {
+                    this.loadingProducts = false;
+                })
+            },
+
+            addProduct(product) {
+                this.form.products.push({
+                    isNew: true,
+                    currentPrice: null,
+                    price: null,
+                    product_id: product.id,
+                    supplier_id: this.form.supplier.id,
+                    product: product
+                })
+            },
+
+            changeProduct(product, index) {
+                this.form.products[index].product = product;
+                this.form.products[index].product_id = product.id;
+            },
+
+            removeProduct(index) {
+                this.form.products.splice(index, 1);
+            }
+        },
+
+        computed: {
+            productSelectedIds() {
+                return this.form.products.map(map => map.product.id).join(',');
+            }
         }
     }
 </script>

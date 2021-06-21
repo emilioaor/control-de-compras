@@ -177,6 +177,8 @@ return [
         'note' => 'Note',
         'important' => 'Important',
         'price' => 'Price',
+        'currentPrice' => 'Current price',
+        'priceDate' => 'Price date',
         'supplier' => 'Supplier',
         'file' => 'File'
     ],

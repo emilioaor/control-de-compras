@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductPrice;
+use App\Models\Supplier;
 use App\Service\AlertService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,7 @@ class ProductPriceController extends Controller
             }
 
         } elseif ($request->type === 'by_product') {
-
+            ProductPrice::updatePrices($request->products);
         }
 
         DB::commit();
@@ -61,12 +62,27 @@ class ProductPriceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
-        //
+        $supplier = Supplier::query()->uuid($id)->firstOrFail();
+        $priceIds = ProductPrice::query()
+            ->selectRaw('MAX(id) as id')
+            ->where('supplier_id', $supplier->id)
+            ->groupBy('product_id')
+            ->groupBy('supplier_id')
+            ->pluck('id')
+        ;
+
+        $productPrices = ProductPrice::query()
+            ->whereIn('id', $priceIds)
+            ->with(['product'])
+            ->get()
+        ;
+
+        return response()->json(['success' => true, 'data' => $productPrices]);
     }
 
     /**
