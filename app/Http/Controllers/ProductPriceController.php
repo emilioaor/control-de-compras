@@ -68,16 +68,9 @@ class ProductPriceController extends Controller
     public function show($id)
     {
         $supplier = Supplier::query()->uuid($id)->firstOrFail();
-        $priceIds = ProductPrice::query()
-            ->selectRaw('MAX(id) as id')
-            ->where('supplier_id', $supplier->id)
-            ->groupBy('product_id')
-            ->groupBy('supplier_id')
-            ->pluck('id')
-        ;
-
         $productPrices = ProductPrice::query()
-            ->whereIn('id', $priceIds)
+            ->currentPrice()
+            ->where('supplier_id', $supplier->id)
             ->with(['product'])
             ->get()
         ;

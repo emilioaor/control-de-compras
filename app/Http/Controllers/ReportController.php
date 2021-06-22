@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\ProductExport;
 use App\Models\Product;
+use App\Models\ProductPrice;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -42,5 +43,28 @@ class ReportController extends Controller
     public function productDownload(Request $request)
     {
         return Excel::download(new ProductExport($request->all()), 'products_' . date('Y-m-d') . '.xlsx');
+    }
+
+    /**
+     * Product report
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function comparative()
+    {
+        return view('report.comparative');
+    }
+
+    /**
+     * Comparative report data
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function comparativeData(Request $request)
+    {
+        $response = ProductPrice::comparative();
+
+        return response()->json(array_merge(['success' => true], $response));
     }
 }

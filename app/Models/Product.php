@@ -71,6 +71,16 @@ class Product extends Model
     }
 
     /**
+     * Suppliers
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'product_prices');
+    }
+
+    /**
      * Scope model
      *
      * @param Builder $query

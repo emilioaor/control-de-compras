@@ -94,6 +94,10 @@
                             'label' => __('menu.productReport'),
                             'route' => route('report.product'),
                         ],
+                        [
+                            'label' => __('menu.comparativeReport'),
+                            'route' => route('report.comparative'),
+                        ],
                     ]
                 ])
         @endauth

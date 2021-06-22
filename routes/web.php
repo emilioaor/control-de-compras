@@ -59,6 +59,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('report/product', [\App\Http\Controllers\ReportController::class, 'product'])->name('report.product');
         Route::post('report/product', [\App\Http\Controllers\ReportController::class, 'productData']);
         Route::get('download/product', [\App\Http\Controllers\ReportController::class, 'productDownload'])->name('download.product');
+        Route::get('report/comparative', [\App\Http\Controllers\ReportController::class, 'comparative'])->name('report.comparative');
+        Route::post('report/comparative', [\App\Http\Controllers\ReportController::class, 'comparativeData']);
     });
 
     Route::group([

@@ -42,5 +42,7 @@ return [
     'loadFile' => 'Load file',
     'pricesByProduct' => 'Prices by product',
     'line' => 'Line',
-    'errors' => 'Errors'
+    'errors' => 'Errors',
+    'priceNotUpgraded' => 'Price not upgraded',
+    'yellow' => 'Yellow'
 ];
