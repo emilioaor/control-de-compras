@@ -30,7 +30,7 @@
                         <td>{{ item.description }}</td>
                         <td>{{ item.created_at |date(true) }}</td>
                         <td>
-                            <a :href="'/admin/product/' + item.uuid + '/edit'" class="btn btn-warning">
+                            <a :href="'/buyer/product/' + item.uuid + '/edit'" class="btn btn-warning">
                                 <i class="fa fa-edit"></i>
                             </a>
                         </td>

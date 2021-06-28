@@ -134,7 +134,7 @@
             checkIfProductExists() {
                 this.loading = true;
 
-                ApiService.post('/admin/product/exists', {upc: this.form.upc})
+                ApiService.post('/buyer/product/exists', {upc: this.form.upc})
                     .then(res => {
                         if (!res.data.data || (this.editData && this.editData.uuid === res.data.data.uuid)) {
                             this.sendForm();
@@ -151,8 +151,8 @@
             sendForm() {
 
                 const apiService = this.editData ?
-                    ApiService.put('/admin/product/' + this.form.uuid, this.form) :
-                    ApiService.post('/admin/product', this.form)
+                    ApiService.put('/buyer/product/' + this.form.uuid, this.form) :
+                    ApiService.post('/buyer/product', this.form)
                 ;
 
                 this.loading = true;

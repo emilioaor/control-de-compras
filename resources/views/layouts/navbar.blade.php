@@ -19,7 +19,7 @@
 
             @include('layouts.navbar-item', [
                     'label' => __('menu.products'),
-                    'show' => Auth::user()->isAdmin(),
+                    'show' => Auth::user()->isAdmin() || Auth::user()->isBuyer(),
                     'items' => [
                         [
                             'label' => __('menu.addNew'),

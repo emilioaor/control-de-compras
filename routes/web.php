@@ -28,8 +28,6 @@ Route::group(['middleware' => 'auth'], function () {
         // Administrator
         Route::post('user/exists', [\App\Http\Controllers\UserController::class, 'exists']);
         Route::resource('user', \App\Http\Controllers\UserController::class);
-        Route::post('product/exists', [\App\Http\Controllers\ProductController::class, 'exists']);
-        Route::resource('product', \App\Http\Controllers\ProductController::class);
     });
 
     Route::group([
@@ -47,6 +45,8 @@ Route::group(['middleware' => 'auth'], function () {
         'roles' => ['administrator', 'buyer']
     ], function () {
         // Buyer
+        Route::post('product/exists', [\App\Http\Controllers\ProductController::class, 'exists']);
+        Route::resource('product', \App\Http\Controllers\ProductController::class);
         Route::resource('purchase', \App\Http\Controllers\PurchaseController::class);
         Route::get('purchase-request', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('buyer.purchase-request.index');
         Route::get('purchase-request/{purchase_request}/edit', [\App\Http\Controllers\PurchaseRequestController::class, 'edit'])->name('buyer.purchase-request.edit');
