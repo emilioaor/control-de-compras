@@ -162,6 +162,7 @@ return [
         'createdAt' => 'Created at',
         'qty' => 'QTY',
         'approved' => 'Approved',
+        'assign' => 'Assign',
         'refused' => 'Refused',
         'status' => 'Status',
         'product' => 'Product',
@@ -172,7 +173,14 @@ return [
         'available' => 'Available',
         'balance' => 'Balance',
         'processedAt' => 'Processed at',
-        'number' => 'Number'
+        'number' => 'Number',
+        'note' => 'Note',
+        'important' => 'Important',
+        'price' => 'Price',
+        'currentPrice' => 'Current price',
+        'priceDate' => 'Price date',
+        'supplier' => 'Supplier',
+        'file' => 'File'
     ],
 
 ];

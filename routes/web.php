@@ -48,11 +48,19 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('product/exists', [\App\Http\Controllers\ProductController::class, 'exists']);
         Route::resource('product', \App\Http\Controllers\ProductController::class);
         Route::resource('purchase', \App\Http\Controllers\PurchaseController::class);
+        Route::resource('product-price', \App\Http\Controllers\ProductPriceController::class);
         Route::get('purchase-request', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('buyer.purchase-request.index');
         Route::get('purchase-request/{purchase_request}/edit', [\App\Http\Controllers\PurchaseRequestController::class, 'edit'])->name('buyer.purchase-request.edit');
         Route::get('inventory', [\App\Http\Controllers\InventoryController::class, 'index'])->name('buyer.inventory.index');
         Route::get('inventory/distribution', [\App\Http\Controllers\InventoryController::class, 'distribution'])->name('buyer.inventory.distribution');
-        Route::post('inventory/distribution/{uuid}', [\App\Http\Controllers\InventoryController::class, 'storeDistribution']);
+        Route::post('inventory/distribution', [\App\Http\Controllers\InventoryController::class, 'storeDistribution']);
+        Route::post('inventory/not-found', [\App\Http\Controllers\InventoryController::class, 'markAsNotFound']);
+        Route::resource('supplier', \App\Http\Controllers\SupplierController::class);
+        Route::get('report/product', [\App\Http\Controllers\ReportController::class, 'product'])->name('report.product');
+        Route::post('report/product', [\App\Http\Controllers\ReportController::class, 'productData']);
+        Route::get('download/product', [\App\Http\Controllers\ReportController::class, 'productDownload'])->name('download.product');
+        Route::get('report/comparative', [\App\Http\Controllers\ReportController::class, 'comparative'])->name('report.comparative');
+        Route::post('report/comparative', [\App\Http\Controllers\ReportController::class, 'comparativeData']);
     });
 
     Route::group([

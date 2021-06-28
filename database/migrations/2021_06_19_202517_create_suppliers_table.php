@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePurchaseRequestGroupsTable extends Migration
+class CreateSuppliersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreatePurchaseRequestGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_request_groups', function (Blueprint $table) {
+        Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
-            $table->string('number', 15)->unique();
-            $table->foreignId('seller_id')->constrained('users');
+            $table->string('name')->unique();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +29,6 @@ class CreatePurchaseRequestGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_request_groups');
+        Schema::dropIfExists('suppliers');
     }
 }

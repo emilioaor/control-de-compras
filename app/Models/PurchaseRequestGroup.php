@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contract\NumberTrait;
 use App\Contract\SearchTrait;
 use App\Contract\UuidGeneratorTrait;
+use App\Contract\WeekTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,18 +19,15 @@ class PurchaseRequestGroup extends Model
     use SearchTrait;
     use SoftDeletes;
     use NumberTrait;
-
-    /** Status */
-    const STATUS_PENDING = 'pending';
-    const STATUS_PROCESSED = 'processed';
+    use WeekTrait;
 
     protected $fillable = ['seller_id'];
 
-    protected $search_fields= ['status', 'p.model', 'p.description', 'number'];
-
-    protected $dates = ['processed_at'];
+    protected $search_fields= ['p.model', 'p.description', 'number'];
 
     protected $number_prefix = 'ORDEN-';
+
+    protected $appends = ['status'];
 
     /**
      * PurchaseRequest constructor.
@@ -38,34 +36,12 @@ class PurchaseRequestGroup extends Model
     public function __construct(array $attributes = [])
     {
         if (! $this->id) {
-            $this->status = self::STATUS_PENDING;
-
             if (Auth::check() && Auth::user()->isSeller()) {
                 $attributes['seller_id'] = Auth::user()->id;
             }
         }
 
         parent::__construct($attributes);
-    }
-
-    /**
-     * Is pending?
-     *
-     * @return bool
-     */
-    public function isPending()
-    {
-        return $this->status === self::STATUS_PENDING;
-    }
-
-    /**
-     * Is processed?
-     *
-     * @return bool
-     */
-    public function isProcessed()
-    {
-        return $this->status === self::STATUS_PROCESSED;
     }
 
     /**
@@ -96,6 +72,16 @@ class PurchaseRequestGroup extends Model
     public function purchaseMovements()
     {
         return $this->hasMany(PurchaseMovement::class);
+    }
+
+    /**
+     * Status
+     *
+     * @return string
+     */
+    public function getStatusAttribute()
+    {
+        return $this->isOpenWeek() ? 'open' : 'closed';
     }
 
     /**
@@ -132,5 +118,21 @@ class PurchaseRequestGroup extends Model
         }
 
         return $this->_search($query, $search);
+    }
+
+    /**
+     * By seller
+     *
+     * @param Builder $query
+     * @param int|null $id
+     * @return Builder
+     */
+    public function scopeBySeller(Builder $query, ?int $id)
+    {
+        if (Auth::check() && Auth::user()->isSeller()) {
+            $id = Auth::user()->id;
+        }
+
+        return $query->where('seller_id', $id);
     }
 }

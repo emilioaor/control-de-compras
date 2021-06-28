@@ -6,7 +6,7 @@
             </div>
             <div class="card-body">
 
-                <div v-if="form.purchaseRequestGroups.length === 0">
+                <div v-if="form.productsByModel.length === 0">
                     <h5>{{ t('form.nothingPendingToProcess') }}</h5>
                 </div>
 
@@ -14,135 +14,230 @@
                     <input type="hidden" :name="'inventory' + inv.product_id" v-validate data-vv-rules="required" v-if="getInventoryAvailable(inv.product_id) < 0">
                 </template>
 
-                <div class="card mb-4 card-product" v-for="(prg, i) in form.purchaseRequestGroups">
-                    <div class="card-header bg-secondary">
-                        <strong>
-                            {{ prg.number }}
-                            <small>({{ prg.created_at | date(true) }})</small>
-                        </strong>
-                    </div>
 
-                    <div class="card-body">
+                <div v-for="(model, i) in form.productsByModel">
+                    <table class="table table-bordered table-responsive-sm">
+                        <thead>
+                        <tr class="bg-header text-white">
+                            <th colspan="9">
+                                <i class="fa fa-eye" v-if="model.show"></i>
+                                <i class="fa fa-eye-slash" v-else></i>
 
-                        <div>
-                            <strong>
-                                <i class="fa fa-user"></i>
-                                {{ prg.seller.name }}
-                            </strong>
-                        </div>
-                        <div class="mb-2">
-                            <strong>
-                                <i class="fa fa-mobile-phone"></i>
-                                {{ t('form.approvedProducts', {
-                                    attribute: prg.products.reduce((total, p) => total + (!isNaN(parseInt(p.approved)) ? parseInt(p.approved) : 0), 0)
-                                }) }}
-                                <template v-if="!prg.show">
-                                    (<a class="pointer" @click="prg.show = !prg.show">{{ t('form.detail').toLowerCase() }}</a>)
-                                </template>
-                                <template v-if="prg.show">
-                                    (<a class="pointer" @click="prg.show = !prg.show">{{ t('form.hide').toLowerCase() }}</a>)
-                                </template>
-                            </strong>
-                        </div>
+                                <a class="pointer text-white call-to-click pl-1" @click="model.show = !model.show">
+                                    {{ model.model }} -
 
-                        <table class="table table-responsive-sm">
-                            <thead>
-                            <tr>
-                                <th>{{ t('validation.attributes.product') }}</th>
-                                <th>{{ t('validation.attributes.ordered') }}</th>
-                                <th>{{ t('validation.attributes.available') }}</th>
-                                <th>{{ t('validation.attributes.approved') }}</th>
+                                    {{ t('form.clickToAssign') }}
+                                </a>
+
+                                <div class="d-inline-block bg-danger rounded p-1 ml-3" v-if="model.markAsNotFound">
+                                    {{ t('form.notFound') }}
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="py-1">{{ t('validation.attributes.seller') }}</th>
+                            <th width="5%" class="text-center py-1 bg-important">{{ t('validation.attributes.note') }}</th>
+                            <th width="5%" class="text-center py-1 bg-important">{{ t('validation.attributes.important') }}</th>
+                            <th width="10%" class="text-center py-1 bg-ordered">{{ t('validation.attributes.ordered') }}</th>
+                            <th width="5%" class="text-center py-1 bg-ordered">%</th>
+                            <th width="10%" class="text-center py-1 bg-available">{{ t('validation.attributes.available') }}</th>
+                            <th width="10%" class="text-center py-1 bg-approved">{{ t('validation.attributes.approved') }}</th>
+                            <th width="10%" class="text-center py-1 bg-approved">{{ t('validation.attributes.assign') }}</th>
+                            <th width="5%" class="text-center py-1 bg-approved">%</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <template
+                            v-for="(product, ii) in model.products"
+                            v-if="product.hasInventory || product.qty > 0 || getApprovedThisWeekByProduct(product) > 0"
+                        >
+                            <tr class="tr-title-product">
+                                <td class="py-0">{{ product.upc }} / {{ product.description }}</td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-center">
+                                    <template v-if="! model.show">
+                                        {{ product.qty }}
+                                    </template>
+                                </td>
+                                <td class="text-center">
+                                    <template v-if="! model.show">
+                                        {{ getOrderedPercentageByProduct(product, model.qty) }}
+                                    </template>
+                                </td>
+                                <td class="text-center">
+                                    <template v-if="! model.show">
+                                        {{ getInventoryAvailable(product.id) }}
+                                    </template>
+                                </td>
+                                <td class="text-center">
+                                    <template v-if="! model.show">
+                                        {{ getApprovedThisWeekByProduct(product) }}
+                                    </template>
+                                </td>
+                                <td class="text-center">
+                                    <template v-if="! model.show">
+                                        {{ getApprovedByProduct(product) }}
+                                    </template>
+                                </td>
+                                <td class="text-center">
+                                    <template v-if="! model.show">
+                                        {{ getApprovedPercentageByProduct(product, model.qty) }}
+                                    </template>
+                                </td>
                             </tr>
-                            </thead>
-                            <tbody v-show="prg.show">
-                                <tr v-for="(product, ii) in prg.products" v-if="product.qty || product.hasInventory">
-                                <td>
-                                    {{ product.description }}
+                            <tr v-show="model.show" v-for="(seller, iii) in product.sellers">
+                                <td>{{ seller.name }}</td>
+                                <td class="text-center bg-important">
+                                    <template v-if="seller.note">
+                                        <i
+                                            @click="noteSelected = seller.note"
+                                            class="fa fa-list-alt pointer"
+                                            data-toggle="modal"
+                                            data-target="#noteModal"
+                                        ></i>
+                                    </template>
+                                    <template v-else>
+                                        -
+                                    </template>
                                 </td>
-                                <td>
-                                    <input type="number" class="form-control" readonly :value="product.qty">
+                                <td class="text-center bg-important">
+                                    {{ seller.important ? t('form.yes') : t('form.no') }}
                                 </td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        :class="{'is-invalid': errors.has('inventory' + product.id)}"
-                                        readonly
-                                        :value="getInventoryAvailable(product.id)"
+                                <td class="text-center bg-ordered">
+                                    {{ seller.qty }}
+                                </td>
+                                <td class="text-center bg-ordered">
+                                    {{ getOrderedPercentageBySeller(seller, model.qty) }}
+                                </td>
+                                <td class="text-center bg-available">
+                                    <span
+                                        class="d-inline-block p-2 w-100"
+                                        :class="{
+                                            'bg-danger text-white': errors.has('inventory' + product.id)
+                                        }"
                                     >
+                                        {{ getInventoryAvailable(product.id) }}
+                                    </span>
                                 </td>
-                                <td>
+                                <td class="text-center bg-approved">
+                                    {{ seller.approvedThisWeek }}
+                                </td>
+                                <td class="text-center bg-approved">
                                     <input
                                         type="number"
-                                        :name="'approved' + i + '-' + ii"
+                                        :name="'approved' + ii + '-' + iii"
                                         class="form-control"
-                                        :class="{'is-invalid': errors.has('approved' + i + '-' + ii, 'prg' + i) || errors.has('inventory' + product.id)}"
-                                        v-model="product.approved"
+                                        :class="{'is-invalid': errors.has('approved' + ii + '-' + iii, 'model' + i) || errors.has('inventory' + product.id)}"
+                                        v-model="seller.approved"
                                         v-validate
-                                        data-vv-rules="required|numeric"
-                                        :data-vv-scope="'prg' + i"
-                                        :readonly="! product.hasInventory || prg.complete"
+                                        data-vv-rules="numeric"
+                                        :data-vv-scope="'model' + i"
+                                        v-if="product.hasInventory"
+                                        :disabled="! product.hasInventory"
                                     >
                                 </td>
+                                <td class="text-center bg-approved">
+                                    {{ getApprovedPercentage(seller, product) }}
+                                </td>
                             </tr>
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <th>{{ t('form.total') }}</th>
-                                <th>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        :value="prg.products.reduce((total, p) => total + (!isNaN(parseInt(p.qty)) ? parseInt(p.qty) : 0), 0)"
-                                        readonly
-                                    >
-                                </th>
-                                <th></th>
-                                <th>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        :value="prg.products.reduce((total, p) => total + (!isNaN(parseInt(p.approved)) ? parseInt(p.approved) : 0), 0)"
-                                        readonly
-                                    >
-                                </th>
-                            </tr>
-                            </tfoot>
-                        </table>
+                        </template>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th class="py-1">{{ t('form.total') }}</th>
+                            <th class="bg-important"></th>
+                            <th class="bg-important"></th>
+                            <th class="text-center py-1 bg-ordered">
+                                {{ model.qty }}
+                            </th>
+                            <th class="text-center py-1 bg-ordered"></th>
+                            <th class="text-center py-1 bg-available">
+                                {{ getInventoryAvailableByProducts(model.products) }}
+                            </th>
+                            <th class="text-center py-1 bg-approved">
+                                {{ getApprovedThisWeekByProducts(model.products) }}
+                            </th>
+                            <th class="text-center py-1 bg-approved">
+                                {{ getApprovedByProducts(model.products) }}
+                            </th>
+                            <th class="text-center py-1 bg-approved"></th>
+                        </tr>
+                        </tfoot>
+                    </table>
 
-                        <div v-if="prg.complete">
-                            <div class="alert alert-success">
-                                {{ t('alert.processSuccessfully') }}
-                            </div>
-                        </div>
-                        <div v-else v-show="prg.show">
-                            <i class="spinner-border spinner-border-sm" v-if="loading === i"></i>
+                    <div>
+                        <button class="btn btn-info" v-if="! model.show" @click="model.show = true">
+                            <i class="fa fa-eye"></i>
+                            {{ t('form.clickToAssign') }}
+                        </button>
 
-                            <button-confirmation
-                                :label="t('form.assignToSeller')"
-                                btn-class="btn btn-success"
-                                icon-class="fa fa-mobile-phone"
-                                v-if="loading !== i"
-                                :disabled="loading !== null"
-                                :confirmation="t('form.areYouSure')"
-                                :buttons="[
-                                        {
-                                            label: t('form.yes'),
-                                            btnClass: 'btn btn-success',
-                                            code: 'yes'
-                                        },
-                                        {
-                                            label: t('form.no'),
-                                            btnClass: 'btn btn-danger',
-                                            code: 'no'
-                                        }
-                                    ]"
-                                @confirmed="handleAssignProducts($event, prg, i)"
-                            ></button-confirmation>
-                        </div>
+                        <i class="spinner-border spinner-border-sm" v-if="loading === i"></i>
+
+                        <button-confirmation
+                            :label="t('form.assignProducts')"
+                            btn-class="btn btn-success"
+                            icon-class="fa fa-save"
+                            v-if="loading !== i & model.show"
+                            :disabled="loading !== null"
+                            :confirmation="t('form.areYouSure')"
+                            :buttons="[
+                                {
+                                    label: t('form.yes'),
+                                    btnClass: 'btn btn-success',
+                                    code: 'yes'
+                                },
+                                {
+                                    label: t('form.no'),
+                                    btnClass: 'btn btn-danger',
+                                    code: 'no'
+                                }
+                            ]"
+                            @confirmed="handleAssignProducts($event, model, i)"
+                        ></button-confirmation>
+
+                        <button-confirmation
+                            :label="model.markAsNotFound ? t('form.markAsFound') : t('form.markAsNotFound')"
+                            :btn-class="model.markAsNotFound ? 'btn btn-warning' : 'btn btn-danger'"
+                            :icon-class="model.markAsNotFound ? '' : 'fa fa-remove'"
+                            v-if="loading !== i & model.show"
+                            :disabled="loading !== null"
+                            :confirmation="t('form.notFoundExplanation')"
+                            :buttons="[
+                                {
+                                    label: t('form.yes'),
+                                    btnClass: 'btn btn-success',
+                                    code: 'yes'
+                                },
+                                {
+                                    label: t('form.no'),
+                                    btnClass: 'btn btn-danger',
+                                    code: 'no'
+                                }
+                            ]"
+                            @confirmed="handleNotFound($event, model, i)"
+                        ></button-confirmation>
                     </div>
+
+                    <hr>
                 </div>
 
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <textarea cols="30" rows="5" class="form-control" v-model="noteSelected"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ t('form.close') }}</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -158,7 +253,11 @@
                 type: Array,
                 required: true
             },
-            inventory: {
+            inventories: {
+                type: Array,
+                required: true
+            },
+            modelsNotFound: {
                 type: Array,
                 required: true
             }
@@ -166,78 +265,180 @@
 
         data() {
             return {
+                inventory: this.inventories.map(inv => {
+                    return {...inv}
+                }),
+                modelsNF: this.modelsNotFound.map(mnf => {
+                   return {...mnf}
+                }),
                 form: {
-                    purchaseRequestGroups: []
+                    productsByModel: []
                 },
-                loading: null
+                loading: null,
+                noteSelected: null
             }
         },
 
         mounted() {
-            this.form = {
-                purchaseRequestGroups: [
-                    ...this.editData.map(prg => {
+            const productsByModel = [];
 
-                        let products = [];
+            this.editData.forEach((prg) => {
+                prg.purchase_requests.forEach(pr => {
+                    if (!productsByModel.some(p => p.model === pr.product.model)) {
 
-                        prg.purchase_requests.forEach(pr => {
+                        const products = pr.product.same_model.map(p => {
 
-                            products = products.concat(
-                                pr.product.same_model.filter(sm => ! products.find(p => p.id === sm.id))
-                            );
+                            const sellers = this.editData
+                                .filter(prg2 => prg2.purchase_requests.some(pr2 => pr2.product.model === pr.product.model))
+                                .map(prg2 => {
+                                    return {
+                                        ...prg2.seller,
+                                        qty: prg2.purchase_requests.find(pr => pr.product_id === p.id)?.qty ?? 0,
+                                        approved: null,
+                                        important: prg2.purchase_requests.find(pr => pr.product_id === p.id)?.important ?? false,
+                                        note: prg2.purchase_requests.find(pr => pr.product_id === p.id)?.note,
+                                        approvedThisWeek: (
+                                            prg2.purchase_movements
+                                                .filter(pm => pm.product_id === p.id)
+                                                .reduce((tot, pm) => tot + (pm.qty * -1), 0)
+                                        )
+                                    }
+                                })
+
+                            return {
+                                ...p,
+                                sellers: [
+                                    ...sellers
+                                ],
+                                hasInventory: this.getInventoryAvailable(p.id),
+                                qty: sellers.reduce((t, s) => t + s.qty, 0)
+                            }
                         });
 
-                        return {
-                            ...prg,
-                            show: true,
-                            complete: false,
-                            products: products.map(p => {
-                                return {
-                                    ...p,
-                                    qty: prg.purchase_requests.find(pr => pr.product_id === p.id)?.qty ?? 0,
-                                    approved: 0,
-                                    hasInventory: !! this.getInventoryAvailable(p.id)
-                                }
-                            })
-                        }
-                    })
-                ]
-            };
+                        productsByModel.push({
+                            model: pr.product.model,
+                            show: false,
+                            markAsNotFound: this.modelsNF.some(mnf => mnf.model === pr.product.model),
+                            qty: products.reduce((total, p) => total + p.qty, 0),
+                            products: [
+                                ...products
+                            ],
+                        });
+                    }
+                })
+            })
+
+
+            this.form.productsByModel = [
+                ...productsByModel
+            ]
         },
 
         methods: {
             getInventoryAvailable(productId) {
                 const inventory = this.inventory.find(i => i.product_id === productId)
                 const available = inventory ? inventory.qty : 0;
-                const consumed = this.form.purchaseRequestGroups.reduce((total, prg) => {
+                const consumed = this.form.productsByModel.reduce((total, model) => {
 
-                    let approved = parseInt(prg.products.find(p => p.id === productId)?.approved ?? 0);
-                    approved = approved > 0 ? approved : 0;
+                    const product = model.products.find(p => p.id === productId);
 
-                    return total + approved
+                    if (! product) {
+                        return total;
+                    }
+
+                    const approved = product.sellers.reduce((tot, s) => {
+                        return tot + this.notNaN(parseInt(s.approved));
+                    }, 0);
+
+                    return total + approved;
                 }, 0)
 
                 return available - consumed;
             },
 
-            handleAssignProducts(code, productRequestGroup, index) {
+            getOrderedPercentageByProduct(product, total) {
+                return this.round(this.notNaN((product.qty * 100) / total));
+            },
+
+            getOrderedPercentageBySeller(seller, total) {
+                return this.round(this.notNaN((seller.qty * 100) / total));
+            },
+
+            getInventoryAvailableByProducts(products) {
+                return products.reduce((total, p) => {
+                    return total + this.getInventoryAvailable(p.id)
+                }, 0)
+            },
+
+            getApprovedByProduct(product) {
+                return product.sellers.reduce((tot, s) => tot + this.notNaN(parseInt(s.approved)), 0)
+            },
+
+            getApprovedByProducts(products) {
+                return products.reduce((total, p) => total + this.getApprovedByProduct(p), 0)
+            },
+
+            getApprovedPercentage(seller, product) {
+                const approved = this.notNaN(parseInt(seller.approved)) + seller.approvedThisWeek;
+                const count = product.hasInventory + product.sellers.reduce((tot, s) => tot + s.approvedThisWeek, 0);
+
+                return this.round(this.notNaN((approved * 100) / count));
+            },
+
+            getApprovedPercentageByProduct(product, total) {
+                const approved = this.getApprovedByProduct(product) + this.getApprovedThisWeekByProduct(product);
+
+                return this.round((approved * 100) / total);
+            },
+
+            getApprovedThisWeekByProduct(product) {
+                return product.sellers.reduce((tot, s) => tot + s.approvedThisWeek, 0);
+            },
+
+            getApprovedThisWeekByProducts(products) {
+                return products.reduce((total, p) => {
+                    return total + this.getApprovedThisWeekByProduct(p);
+                }, 0)
+            },
+
+            round(number) {
+                return Math.round(number * 100) / 100;
+            },
+
+            notNaN(number) {
+                return !isNaN(number) ? number : 0;
+            },
+
+            handleAssignProducts(code, model, index) {
                 if (code === 'yes') {
-                    this.$validator.validateAll('prg' + index).then(res => {
+                    this.$validator.validateAll('model' + index).then(res => {
 
                         this.$validator.validateAll().then(inv =>  {
 
-                            const hasError = productRequestGroup.products.some(p => this.errors.has('inventory' + p.id));
+                            const hasError = model.products.some(p => this.errors.has('inventory' + p.id));
 
                             if (res && ! hasError) {
                                 this.loading = index;
 
-                                ApiService.post('/buyer/inventory/distribution/' + productRequestGroup.uuid, {
-                                    ...productRequestGroup
+                                ApiService.post('/buyer/inventory/distribution', {
+                                    ...model
                                 }).then(res => {
 
                                     if (res.data.success) {
-                                        productRequestGroup.complete = true;
-                                        productRequestGroup.show = false;
+                                        model.products.forEach(p => {
+                                            p.sellers.forEach(s => {
+
+                                                s.approvedThisWeek += this.notNaN(parseInt(s.approved));
+                                                p.hasInventory = p.hasInventory - this.notNaN(parseInt(s.approved));
+                                                const inventory = this.inventory.find(i => i.product_id === p.id);
+
+                                                if (inventory) {
+                                                    inventory.qty = inventory.qty - this.notNaN(parseInt(s.approved));
+                                                }
+
+                                                s.approved = null;
+                                            })
+                                        })
                                         this.loading = null;
                                     }
                                 }).catch(err => {
@@ -249,6 +450,26 @@
                 }
 
             },
+
+            handleNotFound(code, model, index) {
+                if (code === 'yes') {
+                    this.loading = index;
+
+                    ApiService.post('/buyer/inventory/not-found', {
+                        model: model.model
+                    }).then(res => {
+
+                        if (res.data.success) {
+
+                            const pbm = this.form.productsByModel.find(pbm =>  pbm.model === model.model)
+                            pbm.markAsNotFound = ! pbm.markAsNotFound;
+                            this.loading = null;
+                        }
+                    }).catch(err => {
+                        this.loading = null;
+                    })
+                }
+            },
         }
     }
 </script>
@@ -256,5 +477,62 @@
 <style lang="scss" scoped>
     .card-product {
         border: solid 1px rgba(0, 0, 0, 0.3);
+    }
+    .bg-header {
+        background-color: #758496;
+    }
+    .tr-title-product {
+        font-size: 12px;
+        background-color: #758496;
+        color: #fff;
+    }
+    .table-bordered {
+        tr {
+            td {
+                padding: 0;
+                vertical-align: middle;
+                &:first-of-type {
+                    padding: 0 .5rem;
+                }
+            }
+        }
+    }
+    .bg-important {
+        background-color: #ffe9ad;
+    }
+    .bg-ordered {
+        background-color: #d4ffd1;
+    }
+    .bg-available {
+        background-color: #f2ffbf;
+    }
+    .bg-approved {
+        background-color: #badffc;
+
+        .form-control {
+            display: inline-block;
+            width: 80%;
+            height: 30px;
+            padding: .4rem;
+            font-size: 13px;
+        }
+    }
+    .call-to-click {
+        display: inline-block;
+        //animation: callToClick;
+        animation-duration: .4s;
+        animation-iteration-count: 2;
+    }
+
+    @keyframes callToClick {
+        0% {
+            transform: translateY(0) scaleX(1);
+        }
+        50% {
+            transform: translateY(-4px) scaleX(1.03);
+        }
+        100% {
+            transform: translateY(0) scaleX(1);
+        }
     }
 </style>

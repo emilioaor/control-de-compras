@@ -16,7 +16,12 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::query()->search($request->search)->orderBy('description')->paginate();
+        $products = Product::query()
+            ->search($request->search)
+            ->whereNotIn('id', $request->notIn ? explode(',', $request->notIn) : [])
+            ->orderBy('description')
+            ->paginate()
+        ;
 
         if ($request->wantsJson()) {
             return response()->json(['success' => true, 'data' => $products]);
@@ -125,7 +130,13 @@ class ProductController extends Controller
      */
     public function models(Request $request)
     {
-        $models = Product::query()->select('model')->model($request->search)->groupBy('model')->paginate();
+        $models = Product::query()
+            ->select('model')
+            ->model($request->search)
+            ->whereNotIn('model', $request->notIn ? explode(',', $request->notIn) : [])
+            ->groupBy('model')
+            ->paginate()
+        ;
 
         return response()->json(['success' => true, 'data' => $models]);
     }

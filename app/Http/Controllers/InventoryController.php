@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ModelNotFound;
 use App\Models\PurchaseMovement;
-use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestGroup;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +14,7 @@ class InventoryController extends Controller
     /**
      * Inventory list
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
@@ -32,43 +31,67 @@ class InventoryController extends Controller
     public function distribution()
     {
         $inventory = PurchaseMovement::getInventoryAvailable();
+        $modelsNotFound = ModelNotFound::query()->thisWeek()->get();
         $purchaseRequests = PurchaseRequestGroup::query()
-            ->where('status', PurchaseRequestGroup::STATUS_PENDING)
-            ->with(['purchaseRequests.product.sameModel', 'seller'])
+            ->thisWeek()
+            ->with([
+                'purchaseRequests.product.sameModel',
+                'purchaseMovements',
+                'seller'
+            ])
             ->get()
         ;
 
-        return view('inventory.distribution', compact('purchaseRequests', 'inventory'));
+        return view('inventory.distribution', compact('purchaseRequests', 'inventory', 'modelsNotFound'));
     }
 
     /**
      * Store distribution
      *
      * @param Request $request
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function storeDistribution(Request $request, $id)
+    public function storeDistribution(Request $request)
     {
         DB::beginTransaction();
 
-        $purchaseRequestGroup = PurchaseRequestGroup::query()->uuid($id)->firstOrFail();
-        $purchaseRequestGroup->status = PurchaseRequestGroup::STATUS_PROCESSED;
-        $purchaseRequestGroup->processed_at = Carbon::now();
-        $purchaseRequestGroup->save();
-
         foreach ($request->products as $p) {
-            if ($p['approved'] > 0) {
+            foreach ($p['sellers'] as $s) {
 
-                $movement = new PurchaseMovement();
-                $movement->purchase_request_group_id = $purchaseRequestGroup->id;
-                $movement->qty = $p['approved'] * -1;
-                $movement->product_id = $p['id'];
-                $movement->save();
+                $purchaseRequestGroup = PurchaseRequestGroup::query()->thisWeek()->where('seller_id', $s['id'])->first();
+
+                if (! empty($s['approved'])) {
+
+                    $movement = new PurchaseMovement();
+                    $movement->purchase_request_group_id = $purchaseRequestGroup->id;
+                    $movement->qty = $s['approved'] * -1;
+                    $movement->product_id = $p['id'];
+                    $movement->save();
+                }
             }
         }
 
         DB::commit();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Mark model as not found
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function markAsNotFound(Request $request)
+    {
+        $modelNotFound = ModelNotFound::query()->where('model', $request->model)->thisWeek()->first();
+
+        if ($modelNotFound){
+            $modelNotFound->delete();
+        } else {
+            $modelNotFound = new ModelNotFound($request->all());
+            $modelNotFound->save();
+        }
 
         return response()->json(['success' => true]);
     }

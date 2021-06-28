@@ -20,6 +20,8 @@ class CreatePurchaseRequestsTable extends Migration
             $table->foreignId('product_id')->constrained('products');
             $table->integer('qty');
             $table->integer('approved')->nullable();
+            $table->boolean('important');
+            $table->text('note')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

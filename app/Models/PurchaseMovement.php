@@ -66,7 +66,7 @@ class PurchaseMovement extends Model
             ')
             ->join('purchase_request_groups as prg', 'prg.id', '=', 'purchase_requests.purchase_request_group_id')
             ->join('products', 'products.id', '=', 'purchase_requests.product_id')
-            ->where('prg.status', PurchaseRequestGroup::STATUS_PENDING)
+            ->whereBetween('prg.created_at', PurchaseRequestGroup::weekRange())
             ->groupBy('product_id')
             ->get()
         ;
@@ -111,6 +111,11 @@ class PurchaseMovement extends Model
             return $current->qty > 0 || $current->ordered > 0;
         });
 
-        return $response;
+        $fixIndex = [];
+        foreach ($response as $current) {
+            $fixIndex[] = $current;
+        }
+
+        return $fixIndex;
     }
 }

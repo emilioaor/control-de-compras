@@ -64,78 +64,64 @@
                         </div>
                     </div>
 
-                    <div class="card card-product mb-3" v-for="(pr, i) in form.purchaseRequests">
-                        <div class="card-header bg-secondary d-flex pl-1 align-items-center">
-                            <div class="col-auto">
-                                <strong>{{ t('validation.attributes.model') }}:</strong>
-                            </div>
+                    <table class="table table-bordered table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <template v-if="purchaseType === 'purchase-request'">
+                                    <th width="15%" class="text-center">{{ t('validation.attributes.upc') }}</th>
+                                    <th width="36%">{{ t('validation.attributes.description') }}</th>
+                                    <th width="15%" class="text-center">{{ t('validation.attributes.ordered') }}</th>
+                                    <th width="8%" class="text-center">{{ t('validation.attributes.important') }}</th>
+                                    <th width="26%" class="text-center">{{ t('validation.attributes.note') }}</th>
+                                </template>
+                                <template v-else-if="purchaseType === 'purchase'">
+                                    <th width="25%" class="text-center">{{ t('validation.attributes.upc') }}</th>
+                                    <th width="60%">{{ t('validation.attributes.description') }}</th>
+                                    <th width="15%" class="text-center">{{ t('validation.attributes.ordered') }}</th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-for="(pr, i) in form.purchaseRequests">
+                                <tr class="bg-secondary text-white">
+                                    <td colspan="5">
+                                        <div class="d-flex align-items-center">
+                                            <div class="col-auto">
+                                                <strong>{{ t('validation.attributes.model') }}:</strong>
+                                            </div>
 
-                            <div class="flex-grow-1 col-sm-6 col-md-4">
-                                <search-input
-                                    route="/buy/product/models"
-                                    :description-fields="['model']"
-                                    @selectResult="changeModel($event, i)"
-                                    :input-class="errors.has('model' + i) ? 'is-invalid' : ''"
-                                    :value="pr.model ? pr.model : ''"
-                                    :disabled="!! loadingModel"
-                                ></search-input>
-                                <input type="hidden" :name="'model' + i" v-validate data-vv-rules="required" v-if="! pr.model">
-                            </div>
+                                            <div class="flex-grow-1 col-sm-6 col-md-4">
+                                                <search-input
+                                                    :route="'/buy/product/models?notIn=' + form.purchaseRequests.map(map => map.model).join(',')"
+                                                    :description-fields="['model']"
+                                                    @selectResult="changeModel($event, i)"
+                                                    :value="pr.model ? pr.model : ''"
+                                                    :disabled="!! loadingModel"
+                                                ></search-input>
+                                            </div>
 
-                            <div class="col-auto" v-if="i > 0">
-                                <button class="btn btn-danger" @click="removeRequest(i)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </div>
-
-                            <div class="flex-grow-1 text-right">
-                                <i class="fa fa-caret-down d-inline-block pointer" v-if="!pr.show" @click="pr.show = !pr.show"></i>
-                                <i class="fa fa-caret-up d-inline-block pointer" v-if="pr.show" @click="pr.show = !pr.show"></i>
-                            </div>
-                        </div>
-
-                        <div class="card-body">
-                            <i class="spinner-border spinner-border-sm" v-if="loadingModel"></i>
-
-                            <template v-else>
-                                <div>
-                                    <strong>
-                                        <i class="fa fa-mobile-phone"></i>
-                                        {{ t('form.productForThisModel', {attribute: purchaseRequests[i].qty}) }}
-                                        <template v-if="!pr.show">
-                                            (<a class="pointer" @click="pr.show = !pr.show">{{ t('form.detail').toLowerCase() }}</a>)
-                                        </template>
-                                        <template v-if="pr.show">
-                                            (<a class="pointer" @click="pr.show = !pr.show">{{ t('form.hide').toLowerCase() }}</a>)
-                                        </template>
-                                        <div
-                                            class="text-danger d-inline-block"
-                                            v-if="pr.products.some((p, ii) => errors.has('qty' + i + '-' + ii)) || errors.has('productsByModel' + i)"
-                                        >
-                                            {{ t('form.hasErrors') }}
-                                            <i class="fa fa-exclamation"></i>
+                                            <div class="col-auto" v-if="i > 0">
+                                                <button class="btn btn-danger" @click="removeRequest(i)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </strong>
-                                </div>
 
-                                <input type="hidden" :name="'productsByModel' + i" v-validate data-vv-rules="required" v-if="purchaseRequests[i].qty === 0">
-                                <div v-if="errors.has('productsByModel' + i)">
-                                    <span class="invalid-feedback d-block" role="alert" >
-                                        <strong>
-                                            {{ t('form.productsByModel') }}
-                                        </strong>
-                                    </span>
-                                </div>
-
-                                <div v-for="(product, ii) in pr.products" class="row mt-3" v-show="pr.show">
-                                    <div class="col-12">
-                                        <hr class="mt-0">
-                                    </div>
-
-                                    <div class="ml-2 d-flex align-items-center">
-                                        {{ product.description }}
-                                    </div>
-                                    <div class="col-sm-4 col-md-2">
+                                        <input type="hidden" :name="'productsByModel' + i" v-validate data-vv-rules="required" v-if="purchaseRequests[i].model && purchaseRequests[i].qty === 0">
+                                    </td>
+                                </tr>
+                                <tr v-if="pr.model && loadingModel === pr.model">
+                                    <td colspan="5">
+                                        <i class="spinner-border spinner-border-sm"></i>
+                                    </td>
+                                </tr>
+                                <tr
+                                    v-else
+                                    v-for="(product, ii) in pr.products"
+                                >
+                                    <td class="text-center">{{ product.upc }}</td>
+                                    <td>{{ product.description }}</td>
+                                    <td class="text-center" :class="{'bg-danger': errors.has('productsByModel' + i)}">
                                         <input
                                             type="number"
                                             :name="'qty' + i + '-' + ii"
@@ -143,31 +129,65 @@
                                             :class="{'is-invalid': errors.has('qty' + i + '-' + ii)}"
                                             v-model="product.qty"
                                             v-validate
-                                            data-vv-rules="required|min_value:0"
+                                            data-vv-rules="numeric|min_value:0"
                                         >
-                                        <span class="invalid-feedback" role="alert" v-if="errors.firstByRule('qty' + i + '-' + ii, 'required')">
+                                        <span class="invalid-feedback" role="alert" v-if="errors.firstByRule('qty' + i + '-' + ii, 'numeric')">
                                             <strong>
                                                 {{ t('validation.required', {attribute: 'qty'}) }}
                                             </strong>
                                         </span>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
+                                    </td>
+                                    <template v-if="purchaseType === 'purchase-request'">
+                                        <td class="text-center">
+                                            <div
+                                                class="custom-checkbox text-white d-flex justify-content-start"
+                                                @click="product.important = !product.important"
+                                                :class="{
+                                                    'justify-content-end': product.important
+                                                }"
+                                            >
+                                                <div v-if="product.important" class="bg-success ">
+                                                    {{ t('form.yes') }}
+                                                </div>
+                                                <div v-else class="bg-danger">
+                                                    {{ t('form.no') }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" >
+                                            <button
+                                                class="btn btn-link"
+                                                v-if="! product.showNote"
+                                                @click="product.showNote = true"
+                                            >
+                                                <i class="fa fa-list-alt"></i>
+                                                {{ t('form.addNote') }}
+                                            </button>
 
-                    <div>
-                        <button class="btn btn-info text-white" @click="addMore()">
-                            <i class="fa fa-plus"></i>
-                            {{ t('form.addMore') }}
-                        </button>
-                    </div>
+                                            <textarea
+                                                v-if="product.showNote"
+                                                class="form-control"
+                                                rows="2"
+                                                :placeholder="t('validation.attributes.note')"
+                                                v-model="product.note"
+                                            ></textarea>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="card-footer">
                     <i class="spinner-border spinner-border-sm" v-if="loading"></i>
 
-                    <button class="btn btn-success" v-if="! loading" @click="validateForm()">
+                    <button
+                        class="btn btn-success"
+                        v-if="! loading"
+                        @click="validateForm()"
+                        :disabled="purchaseRequests.length < 2"
+                    >
                         <i class="fa fa-save"></i>
                         {{ t('form.save') }}
                     </button>
@@ -285,7 +305,9 @@
             },
 
             removeRequest(index) {
-                this.form.purchaseRequests.splice(index, 1);
+                if (this.form.purchaseRequests[index].model) {
+                    this.form.purchaseRequests.splice(index, 1);
+                }
             },
 
             getProductByModel(model, index) {
@@ -299,11 +321,17 @@
                         this.form.purchaseRequests[index].products = res.data.data.map(p => {
                             return  {
                                 ...p,
-                                qty: 0
+                                qty: null,
+                                important: false,
+                                note: null,
+                                showNote: false
                             }
                         });
 
                         this.form.purchaseRequests[index].show = true;
+                        if (this.form.purchaseRequests[this.form.purchaseRequests.length - 1].model) {
+                            this.addMore();
+                        }
                     }
 
                 }).catch(err => {
@@ -328,5 +356,16 @@
 <style lang="scss" scoped>
     .card-product {
         border: solid 1px rgba(0,0,0, .3);
+    }
+    .custom-checkbox {
+        border: solid 1px #ccc;
+        border-radius: 20px;
+        cursor: pointer;
+        background-color: #cddd;
+
+        div {
+            padding: .3rem .4rem;
+            border-radius: 50%;
+        }
     }
 </style>
