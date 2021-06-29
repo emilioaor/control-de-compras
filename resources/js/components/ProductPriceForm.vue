@@ -79,10 +79,10 @@
 
                             <div class="col-12" v-else>
 
-                                <table class="table table-responsive">
+                                <table class="table table-responsive-sm">
                                     <thead>
                                         <tr>
-                                            <th>{{ t('validation.attributes.product') }}</th>
+                                            <th>{{ t('validation.attributes.model') }}</th>
                                             <th></th>
                                             <th class="text-center">{{ t('validation.attributes.currentPrice') }}</th>
                                             <th class="text-center">{{ t('validation.attributes.priceDate') }}</th>
@@ -90,39 +90,39 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(productPrice, i) in form.products">
+                                        <tr v-for="(model, i) in form.models">
                                             <td>
-                                                <template v-if="productPrice.isNew">
+                                                <template v-if="model.isNew">
                                                     <search-input
-                                                        :route="'/buy/product?notIn=' + productSelectedIds"
-                                                        :description-fields="['upc', 'description']"
-                                                        @selectResult="changeProduct($event, i)"
-                                                        :value="productPrice.product ? productPrice.product.upc + ' / ' + productPrice.product.description : ''"
+                                                        :route="'/buy/product/models?notIn=' + modelSelected"
+                                                        :description-fields="['model']"
+                                                        @selectResult="changeModel($event, i)"
+                                                        :value="model.model"
                                                     ></search-input>
                                                 </template>
 
                                                 <template v-else>
-                                                    {{ productPrice.product.upc }} / {{ productPrice.product.description }}
+                                                    {{ model.model }}
                                                 </template>
                                             </td>
                                             <td>
-                                                <template v-if="productPrice.isNew">
-                                                    <button class="btn btn-danger" @click="removeProduct(i)">
+                                                <template v-if="model.isNew">
+                                                    <button class="btn btn-danger" @click="removeModel(i)">
                                                         <i class="fa fa-trash"></i>
                                                     </button>
                                                 </template>
                                             </td>
                                             <td class="text-center">
-                                                <template v-if="productPrice.currentPrice">
-                                                    {{ productPrice.currentPrice }}
+                                                <template v-if="model.currentPrice">
+                                                    {{ model.currentPrice }}
                                                 </template>
                                                 <template v-else>
                                                     -
                                                 </template>
                                             </td>
                                             <td class="text-center">
-                                                <template v-if="productPrice.updated_at">
-                                                    {{ productPrice.updated_at | date }}
+                                                <template v-if="model.updated_at">
+                                                    {{ model.updated_at | date }}
                                                 </template>
                                                 <template v-else>
                                                     -
@@ -134,9 +134,9 @@
                                                     :name="'price' + i"
                                                     class="form-control"
                                                     :class="{'is-invalid': errors.has('price' + i)}"
-                                                    v-model="productPrice.price"
+                                                    v-model="model.price"
                                                     v-validate
-                                                    :data-vv-rules="productPrice.isNew ? 'required' : ''"
+                                                    :data-vv-rules="model.isNew ? 'required' : ''"
                                                 >
                                             </td>
                                         </tr>
@@ -145,9 +145,9 @@
                                         <tr>
                                             <td>
                                                 <search-input
-                                                    :route="'/buy/product?notIn=' + productSelectedIds"
-                                                    :description-fields="['upc', 'description']"
-                                                    @selectResult="addProduct($event)"
+                                                    :route="'/buy/product/models?notIn=' + modelSelected"
+                                                    :description-fields="['model']"
+                                                    @selectResult="addModel($event)"
                                                     :value="''"
                                                 ></search-input>
                                             </td>
@@ -227,7 +227,7 @@
                     supplier_id: null,
                     type: 'by_product',
                     file: null,
-                    products: []
+                    models: []
                 },
                 modal: {
                     errors: [],
@@ -289,59 +289,65 @@
             changeType(type) {
                 if (this.form.type !== type) {
 
-                    this.form.products = [];
+                    this.form.models = [];
                     this.form.type = type;
 
                     if (type === 'by_product') {
-                        this.getProducts();
+                        this.getModels();
                     }
                 }
             },
 
-            getProducts() {
+            getModels() {
                 this.loadingProducts = true;
 
                 ApiService.get('/buyer/product-price/' + this.form.supplier.uuid).then(res => {
-                    this.form.products = [
-                        ...res.data.data.map(productPrice => {
-                            return {
-                                ...productPrice,
+
+                    const models = [];
+
+                    res.data.data.forEach(productPrice => {
+                        if (! models.some(m => m.model === productPrice.product.model)) {
+                            models.push({
+                                model: productPrice.product.model,
                                 currentPrice: productPrice.price,
                                 price: null,
-                                isNew: false
-                            }
-                        })
-                    ];
+                                isNew: false,
+                                supplier_id: this.form.supplier.id,
+                                updated_at: productPrice.updated_at
+                            })
+                        }
+                    });
+
+                    this.form.models = models;
                     this.loadingProducts = false;
+
                 }).catch(err => {
                     this.loadingProducts = false;
                 })
             },
 
-            addProduct(product) {
-                this.form.products.push({
+            addModel(model) {
+                this.form.models.push({
+                    model: model.model,
                     isNew: true,
                     currentPrice: null,
                     price: null,
-                    product_id: product.id,
                     supplier_id: this.form.supplier.id,
-                    product: product
                 })
             },
 
-            changeProduct(product, index) {
-                this.form.products[index].product = product;
-                this.form.products[index].product_id = product.id;
+            changeModel(product, index) {
+                this.form.models[index].model = product.model;
             },
 
-            removeProduct(index) {
-                this.form.products.splice(index, 1);
+            removeModel(index) {
+                this.form.models.splice(index, 1);
             }
         },
 
         computed: {
-            productSelectedIds() {
-                return this.form.products.map(map => map.product.id).join(',');
+            modelSelected() {
+                return this.form.models.map(m => m.model).join(',');
             }
         }
     }

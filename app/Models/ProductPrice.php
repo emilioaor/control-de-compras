@@ -80,7 +80,7 @@ class ProductPrice extends Model
             }
         }
 
-        $productPrices = ProductPrice::query()->currentPrice()->get()->map(function ($productPrice) {
+        $productPrices = ProductPrice::query()->currentPrice()->with(['product'])->get()->map(function ($productPrice) {
             $productPrice->isOpenWeek = $productPrice->isOpenWeek();
 
             return $productPrice;
@@ -126,18 +126,23 @@ class ProductPrice extends Model
         foreach ($prices as $pp) {
             if (! empty($pp['price'])) {
 
-                $productPrice = ProductPrice::query()
-                    ->thisWeek()
-                    ->where('supplier_id', $pp['supplier_id'])
-                    ->where('product_id', $pp['product_id'])
-                    ->firstOrNew([
-                        'supplier_id' => $pp['supplier_id'],
-                        'product_id' => $pp['product_id']
-                    ])
-                ;
+                $productIds = Product::query()->where('model', $pp['model'])->pluck('id');
 
-                $productPrice->price = $pp['price'];
-                $productPrice->save();
+                foreach ($productIds as $productId) {
+
+                    $productPrice = ProductPrice::query()
+                        ->thisWeek()
+                        ->where('supplier_id', $pp['supplier_id'])
+                        ->where('product_id', $productId)
+                        ->firstOrNew([
+                            'supplier_id' => $pp['supplier_id'],
+                            'product_id' => $productId
+                        ])
+                    ;
+
+                    $productPrice->price = $pp['price'];
+                    $productPrice->save();
+                }
             }
         }
     }

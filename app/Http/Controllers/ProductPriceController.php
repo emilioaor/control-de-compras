@@ -49,7 +49,7 @@ class ProductPriceController extends Controller
             }
 
         } elseif ($request->type === 'by_product') {
-            ProductPrice::updatePrices($request->products);
+            ProductPrice::updatePrices($request->models);
         }
 
         DB::commit();

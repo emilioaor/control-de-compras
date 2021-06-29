@@ -24,27 +24,32 @@
                                 {{ t('form.yellow') }}:
                                 {{ t('form.priceNotUpgraded') }}
                             </div>
-                        </div>
 
+                            <div class="rounded p-1 ml-2">
+                                <i class="fa fa-star"></i>:
+                                {{ t('form.bestPrice') }}
+                            </div>
+                        </div>
 
                         <table class="table" :style="'font-size: ' + fs + 'px'">
                             <thead>
                             <tr>
-                                <th>{{ t('validation.attributes.product') }}</th>
+                                <th>{{ t('validation.attributes.model') }}</th>
                                 <th class="text-center" v-for="supplier in suppliers">
                                     {{ supplier.name }}
                                 </th>
                             </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(product, i) in productsC">
-                                    <td>{{ product.upc }} / {{ product.description }}</td>
+                                <tr v-for="(model, i) in modelsC">
+                                    <td>{{ model.model }}</td>
                                     <td
-                                        v-for="supplier in product.suppliers"
+                                        v-for="supplier in model.suppliers"
                                         class="text-center"
                                         :class="{'bg-warning': supplier.price && ! supplier.isOpenWeek}"
                                     >
                                         <template v-if="supplier.price">
+                                            <i class="fa fa-star" v-if="supplier.bestPrice"></i>
                                             {{ supplier.price }}
                                             <small>({{ supplier.updated_at | date }})</small>
                                         </template>
@@ -115,24 +120,37 @@
         },
 
         computed: {
-            productsC() {
-                return this.products.map(p => {
-                    return {
-                        upc: p.upc,
-                        description: p.description,
-                        suppliers: this.suppliers.map(s => {
+            modelsC() {
+                const models = [];
 
-                            const pp = this.productPrices.find(pp => pp.product_id === p.id && pp.supplier_id === s.id);
+                this.products.forEach(p => {
+                    if (! models.some(m => m.model === p.model)) {
+                        models.push({
+                            model: p.model,
+                            suppliers: this.suppliers.map(s => {
 
-                            return {
-                                ...s,
-                                price: pp?.price ?? null,
-                                updated_at: pp?.updated_at ?? null,
-                                isOpenWeek: pp?.isOpenWeek ?? null
-                            }
-                        })
+                                const pp = this.productPrices.find(pp => pp.product.model === p.model && pp.supplier_id === s.id);
+                                let bestPrice = false;
+
+                                if (pp) {
+                                    bestPrice = ! this.productPrices.find(
+                                        pp2 => pp2.product.model === p.model && pp2.supplier_id !== s.id && pp2.price < pp.price
+                                    );
+                                }
+
+                                return {
+                                    ...s,
+                                    price: pp?.price ?? null,
+                                    updated_at: pp?.updated_at ?? null,
+                                    isOpenWeek: pp?.isOpenWeek ?? null,
+                                    bestPrice: bestPrice
+                                }
+                            })
+                        });
                     }
                 });
+
+                return models;
             }
         }
     }

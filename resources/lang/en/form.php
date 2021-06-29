@@ -44,5 +44,6 @@ return [
     'line' => 'Line',
     'errors' => 'Errors',
     'priceNotUpgraded' => 'Price not upgraded',
+    'bestPrice' => 'Best price',
     'yellow' => 'Yellow'
 ];
