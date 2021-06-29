@@ -92,6 +92,7 @@
                                                 <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
                                                 <th class="text-center">{{ t('validation.attributes.approved') }}</th>
                                                 <th width="5%" class="text-center">{{ t('validation.attributes.balance') }}</th>
+                                                <th class="text-center">{{ t('validation.attributes.available') }}</th>
                                             </template>
                                             <template v-else-if="purchaseType === 'purchase'">
                                                 <th width="5%" class="text-center">{{ t('validation.attributes.qty') }}</th>
@@ -128,6 +129,7 @@
                                                     {{ product.balance }}
                                                 </span>
                                                 </td>
+                                                <td class="text-center">{{ product.inventory }}</td>
                                             </template>
                                             <template v-else-if="purchaseType === 'purchase'">
                                                 <td class="text-center">{{ product.approved }}</td>
@@ -154,6 +156,7 @@
                                                     {{ formC.products.reduce((total, p) => total + p.balance, 0) }}
                                                 </span>
                                             </th>
+                                            <th></th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -182,6 +185,11 @@
                 }
             },
             modelsNotFound: {
+                type: Array,
+                required: false,
+                default: () => []
+            },
+            inventory: {
                 type: Array,
                 required: false,
                 default: () => []
@@ -223,7 +231,8 @@
                         balance: pr.qty * -1,
                         markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pr.product.model),
                         important: pr.important,
-                        note: pr.note
+                        note: pr.note,
+                        inventory: this.inventory.find(i => i.product_id === pr.product.id)?.qty ?? 0
                     }
                 });
 
@@ -241,7 +250,8 @@
                             balance: pm.qty < 0 ? pm.qty * -1 : pm.qty,
                             markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pm.product.model),
                             important: false,
-                            note: null
+                            note: null,
+                            inventory: this.inventory.find(i => i.product_id === pm.product.id)?.qty ?? 0
                         })
                     }
                 })

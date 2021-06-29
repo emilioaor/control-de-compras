@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ModelNotFound;
+use App\Models\PurchaseMovement;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestGroup;
 use App\Models\User;
@@ -113,6 +114,7 @@ class PurchaseRequestController extends Controller
     public function edit($id)
     {
         $modelsNotFound = ModelNotFound::query()->thisWeek()->get();
+        $inventory = PurchaseMovement::getInventoryAvailable();
         $purchaseRequestGroup = PurchaseRequestGroup::query()
             ->my()
             ->uuid($id)
@@ -120,7 +122,7 @@ class PurchaseRequestController extends Controller
             ->firstOrFail()
         ;
 
-        return view('purchaseRequest.edit', compact('purchaseRequestGroup', 'modelsNotFound'));
+        return view('purchaseRequest.edit', compact('purchaseRequestGroup', 'modelsNotFound', 'inventory'));
     }
 
     /**
