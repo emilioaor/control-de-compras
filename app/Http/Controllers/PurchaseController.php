@@ -118,7 +118,7 @@ class PurchaseController extends Controller
         $purchaseGroup = PurchaseGroup::query()
             ->my()
             ->uuid($id)
-            ->with(['purchaseMovements.product', 'buyer'])
+            ->with(['purchaseMovements.product', 'buyer', 'supplier'])
             ->firstOrFail()
         ;
 

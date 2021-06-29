@@ -43,8 +43,9 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3" v-if="user.role === 'administrator' && purchaseType === 'purchase'">
-                        <div class="col-sm-6 col-md-4 form-group">
+                    <div class="row mb-3" v-if="purchaseType === 'purchase'">
+
+                        <div class="col-sm-6 col-md-4 form-group" v-if="user.role === 'administrator'">
                             <label>{{ t('validation.attributes.buyer') }}</label>
 
                             <select
@@ -60,6 +61,24 @@
 
                             <span class="invalid-feedback d-block" role="alert" v-if="errors.has('buyer')">
                                 <strong>{{ t('validation.required', {attribute: 'buyer'}) }}</strong>
+                            </span>
+                        </div>
+
+                        <div class="col-sm-6 col-md-4 form-group">
+                            <label>{{ t('validation.attributes.supplier') }}</label>
+
+                            <search-input
+                                :route="'/buyer/supplier'"
+                                :description-fields="['name']"
+                                :inputClass="errors.has('supplier') ? 'is-invalid' : ''"
+                                @selectResult="changeSupplier($event)"
+                                :value="form.supplier ? form.supplier.name : ''"
+                                :disabled="loading"
+                            ></search-input>
+                            <input type="hidden" name="supplier" v-validate data-vv-rules="required" v-if="! form.supplier">
+
+                            <span class="invalid-feedback d-block" role="alert" v-if="errors.has('supplier')">
+                                <strong>{{ t('validation.required', {attribute: 'supplier'}) }}</strong>
                             </span>
                         </div>
                     </div>
@@ -248,6 +267,8 @@
                 form: {
                     seller_id: null,
                     buyer_id: null,
+                    supplier_id: null,
+                    supplier: null,
                     purchaseRequests: []
                 }
             }
@@ -294,6 +315,11 @@
                     this.getProductByModel(event.model, index);
                 }
 
+            },
+
+            changeSupplier(supplier) {
+                this.form.supplier = supplier;
+                this.form.supplier_id = supplier.id;
             },
 
             addMore() {

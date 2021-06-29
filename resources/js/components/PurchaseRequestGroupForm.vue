@@ -51,6 +51,18 @@
                                         readonly
                                     >
                                 </div>
+
+                                <div class="col-sm-6 col-lg-4 form-group">
+                                    <label for="supplier">{{ t('validation.attributes.supplier') }}</label>
+                                    <input
+                                        type="text"
+                                        id="supplier"
+                                        name="supplier"
+                                        class="form-control"
+                                        :value="formC.supplier ? formC.supplier.name : ''"
+                                        readonly
+                                    >
+                                </div>
                             </template>
 
                             <div class="col-sm-6 col-lg-4 form-group">

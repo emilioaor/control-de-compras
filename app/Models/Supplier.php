@@ -28,4 +28,14 @@ class Supplier extends Model
     {
         return $this->hasMany(ProductPrice::class);
     }
+
+    /**
+     * Purchase groups
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function purchaseGroups()
+    {
+        return $this->hasMany(PurchaseGroup::class);
+    }
 }

@@ -21,7 +21,7 @@ class PurchaseGroup extends Model
     use NumberTrait;
     use WeekTrait;
 
-    protected $fillable = ['buyer_id'];
+    protected $fillable = ['buyer_id', 'supplier_id'];
 
     protected $search_fields= ['p.model', 'p.description', 'number'];
 
@@ -53,6 +53,16 @@ class PurchaseGroup extends Model
     public function buyer()
     {
         return $this->belongsTo(User::class, 'buyer_id')->withTrashed();
+    }
+
+    /**
+     * Supplier
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class)->withTrashed();
     }
 
     /**
