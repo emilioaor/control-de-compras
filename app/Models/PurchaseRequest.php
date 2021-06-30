@@ -41,6 +41,16 @@ class PurchaseRequest extends Model
     }
 
     /**
+     * Purchase request history
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function purchaseRequestHistories()
+    {
+        return $this->hasMany(PurchaseRequestHistory::class);
+    }
+
+    /**
      * Search overwrite
      *
      * @param Builder $query

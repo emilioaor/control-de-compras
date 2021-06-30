@@ -180,7 +180,8 @@ return [
         'currentPrice' => 'Current price',
         'priceDate' => 'Price date',
         'supplier' => 'Supplier',
-        'file' => 'File'
+        'file' => 'File',
+        'date' => 'Date'
     ],
 
 ];

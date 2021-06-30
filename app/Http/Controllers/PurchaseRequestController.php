@@ -6,6 +6,7 @@ use App\Models\ModelNotFound;
 use App\Models\PurchaseMovement;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestGroup;
+use App\Models\PurchaseRequestHistory;
 use App\Models\User;
 use App\Service\AlertService;
 use Illuminate\Http\Request;
@@ -83,6 +84,11 @@ class PurchaseRequestController extends Controller
                     }
 
                     $purchaseRequest->save();
+
+                    $purchaseRequestHistory = new PurchaseRequestHistory();
+                    $purchaseRequestHistory->purchase_request_id = $purchaseRequest->id;
+                    $purchaseRequestHistory->qty = $product['qty'];
+                    $purchaseRequestHistory->save();
                 }
             }
         }

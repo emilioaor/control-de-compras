@@ -106,6 +106,13 @@
                                 </td>
                                 <td class="text-center bg-ordered">
                                     {{ seller.qty }}
+
+                                    <i
+                                        @click="historySelected = seller.histories"
+                                        class="fa fa-calendar pointer"
+                                        data-toggle="modal"
+                                        data-target="#orderedModal"
+                                    ></i>
                                 </td>
                                 <td class="text-center bg-ordered">
                                     {{ getOrderedPercentageBySeller(seller, model.qty) }}
@@ -240,6 +247,35 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="orderedModal" tabindex="-1" role="dialog" aria-labelledby="orderedModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <table class="table table-responsive-sm">
+                            <thead>
+                                <tr>
+                                    <th>{{ t('validation.attributes.product') }}</th>
+                                    <th>{{ t('validation.attributes.date') }}</th>
+                                    <th class="text-center">{{ t('validation.attributes.qty') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="history in historySelected">
+                                    <td>{{ history.product.upc }} / {{ history.product.description }}</td>
+                                    <td>{{ history.created_at | date }}</td>
+                                    <td class="text-center">{{ history.qty }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ t('form.close') }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -275,7 +311,8 @@
                     productsByModel: []
                 },
                 loading: null,
-                noteSelected: null
+                noteSelected: null,
+                historySelected: null
             }
         },
 
@@ -301,7 +338,13 @@
                                             prg2.purchase_movements
                                                 .filter(pm => pm.product_id === p.id)
                                                 .reduce((tot, pm) => tot + (pm.qty * -1), 0)
-                                        )
+                                        ),
+                                        histories: prg2.purchase_requests.find(pr => pr.product_id === p.id)?.purchase_request_histories.map(prh => {
+                                            return {
+                                                ...prh,
+                                                product: {...p}
+                                            }
+                                        }) ?? []
                                     }
                                 })
 

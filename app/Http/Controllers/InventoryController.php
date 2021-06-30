@@ -36,6 +36,7 @@ class InventoryController extends Controller
             ->thisWeek()
             ->with([
                 'purchaseRequests.product.sameModel',
+                'purchaseRequests.purchaseRequestHistories',
                 'purchaseMovements',
                 'seller'
             ])
