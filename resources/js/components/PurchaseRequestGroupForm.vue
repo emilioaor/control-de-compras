@@ -124,7 +124,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="product in formC.products">
+                                        <tr
+                                            v-for="product in formC.products"
+                                            :class="{
+                                                'bg-approved': product.ordered === product.approved,
+                                                'bg-partial-approved': product.approved > 0 && product.approved < product.ordered,
+                                                'bg-not-found': product.approved === 0 && product.markAsNotFound,
+                                            }"
+                                        >
                                             <td>{{ product.upc }}</td>
                                             <td>
                                                 {{ product.description }}
@@ -324,3 +331,15 @@
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    .bg-approved {
+        background-color: #cfffe3;
+    }
+    .bg-partial-approved {
+        background-color: #eaebba;
+    }
+    .bg-not-found {
+        background-color: #ffcece;
+    }
+</style>

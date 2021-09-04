@@ -60,9 +60,10 @@
 
                                     <div class="w-100 text-right p-1">
                                         <button-confirmation
+                                            v-if="product.qty > 0"
                                             :label="product.markAsNotFound ? t('form.markAsFound') : t('form.markAsNotFound')"
-                                            :btn-class="product.markAsNotFound ? 'btn btn-warning' : 'btn btn-danger'"
-                                            :icon-class="product.markAsNotFound ? '' : 'fa fa-remove'"
+                                            :btn-class="product.markAsNotFound ? 'btn btn-warning fs-12' : 'btn btn-danger fs-12'"
+                                            :icon-class="product.markAsNotFound ? 'fa fa-check' : 'fa fa-remove'"
                                             :disabled="loading !== null"
                                             :confirmation="t('form.notFoundExplanation')"
                                             :buttons="[
