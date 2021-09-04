@@ -185,7 +185,8 @@ return [
         'date' => 'Date',
         'excel' => 'Excel',
         'customer' => 'Customer',
-        'brand' => 'Brand'
+        'brand' => 'Brand',
+        'order' => 'Order'
     ],
 
 ];

@@ -101,6 +101,10 @@
                             'route' => route('report.product'),
                         ],
                         [
+                            'label' => __('menu.orderReport'),
+                            'route' => route('report.order'),
+                        ],
+                        [
                             'label' => __('menu.comparativeReport'),
                             'route' => route('report.comparative'),
                         ],

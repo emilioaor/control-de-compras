@@ -147,4 +147,46 @@ class PurchaseRequestGroup extends Model
 
         return $query->where('seller_id', $id);
     }
+
+    /**
+     * Scope report
+     *
+     * @param Builder $query
+     * @param $filters
+     * @return Builder
+     */
+    public function scopeReport(Builder $query, $filters)
+    {
+        $query
+            ->select([
+                'purchase_request_groups.number',
+                'purchase_request_groups.created_at',
+                'b.name as brand',
+                'p.upc',
+                'p.model',
+                'p.description',
+                'u.name as seller',
+                'purchase_request_groups.customer_name'
+            ])
+            ->join('purchase_requests as pr', 'pr.purchase_request_group_id', '=', 'purchase_request_groups.id')
+            ->join('products as p', 'p.id', '=', 'pr.product_id')
+            ->join('brands as b', 'b.id', '=', 'p.brand_id')
+            ->join('users as u', 'u.id', '=', 'purchase_request_groups.seller_id')
+            ->whereBetween('purchase_request_groups.created_at', self::weekRange())
+        ;
+
+        if (isset($filters['upc'])) {
+            $query->where('p.upc', $filters['upc']);
+        }
+
+        if (isset($filters['model'])) {
+            $query->where('p.model', $filters['model']);
+        }
+
+        if (isset($filters['brand'])) {
+            $query->where('b.name', $filters['brand']);
+        }
+
+        return $query;
+    }
 }

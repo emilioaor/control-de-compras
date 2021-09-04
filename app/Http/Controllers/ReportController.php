@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ProductExport;
 use App\Models\Product;
 use App\Models\ProductPrice;
+use App\Models\PurchaseRequestGroup;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -66,5 +67,28 @@ class ReportController extends Controller
         $response = ProductPrice::comparative();
 
         return response()->json(array_merge(['success' => true], $response));
+    }
+
+    /**
+     * Order report
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function order()
+    {
+        return view('report.order');
+    }
+
+    /**
+     * Report order
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function orderData(Request $request)
+    {
+        $orders = PurchaseRequestGroup::query()->report($request->all())->get();
+
+        return response()->json(['success' => true, 'data' => $orders]);
     }
 }

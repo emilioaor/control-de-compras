@@ -19,6 +19,7 @@ return [
     'management' => 'Management',
     'reports' => 'Reports',
     'productReport' => 'Product report',
+    'orderReport' => 'Order report',
     'comparativeReport' => 'Comparative report',
     'purchasePrice' => 'Purchase price'
 ];
