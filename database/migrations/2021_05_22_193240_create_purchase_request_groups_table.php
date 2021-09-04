@@ -18,6 +18,7 @@ class CreatePurchaseRequestGroupsTable extends Migration
             $table->uuid('uuid');
             $table->string('number', 15)->unique();
             $table->foreignId('seller_id')->constrained('users');
+            $table->boolean('excel_downloaded')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

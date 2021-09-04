@@ -21,7 +21,7 @@ class PurchaseRequestGroup extends Model
     use NumberTrait;
     use WeekTrait;
 
-    protected $fillable = ['seller_id'];
+    protected $fillable = ['seller_id', 'excel_downloaded'];
 
     protected $search_fields= ['p.model', 'p.description', 'number'];
 

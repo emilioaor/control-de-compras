@@ -22,6 +22,7 @@
                         <th>{{ t('validation.attributes.seller') }}</th>
                         <th class="text-center">{{ t('validation.attributes.ordered') }}</th>
                         <th class="text-center">{{ t('validation.attributes.approved') }}</th>
+                        <th class="text-center">{{ t('validation.attributes.excel') }}</th>
                         <th class="text-center">{{ t('validation.attributes.status') }}</th>
                         <th width="5%"></th>
                     </tr>
@@ -34,6 +35,7 @@
                         <td>{{ item.seller.name }}</td>
                         <td class="text-center">{{ item.purchase_requests.reduce((total, pr) => total += pr.qty, 0) }}</td>
                         <td class="text-center">{{ item.purchase_movements.reduce((total, pm) => total += pm.qty * -1, 0) }}</td>
+                        <td class="text-center">{{ item.excel_downloaded ? t('form.yes') : t('form.no') }}</td>
                         <td class="text-center">
                             <span
                                 class="p-1 rounded d-inline-block"

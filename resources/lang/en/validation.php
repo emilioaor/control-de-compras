@@ -181,7 +181,8 @@ return [
         'priceDate' => 'Price date',
         'supplier' => 'Supplier',
         'file' => 'File',
-        'date' => 'Date'
+        'date' => 'Date',
+        'excel' => 'Excel'
     ],
 
 ];

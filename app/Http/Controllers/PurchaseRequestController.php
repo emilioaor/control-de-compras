@@ -153,4 +153,24 @@ class PurchaseRequestController extends Controller
     {
         //
     }
+
+    /**
+     * Mark excel as downloaded
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function excelDownloaded($id)
+    {
+        $purchaseRequestGroup = PurchaseRequestGroup::query()
+            ->my()
+            ->uuid($id)
+            ->firstOrFail()
+        ;
+
+        $purchaseRequestGroup->excel_downloaded = true;
+        $purchaseRequestGroup->save();
+
+        return response()->json(['success' => true]);
+    }
 }

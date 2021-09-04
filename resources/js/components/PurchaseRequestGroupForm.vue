@@ -81,7 +81,12 @@
                             </div>
 
                             <div class="col-12 form-group" v-if="editData">
-                                <button type="button" class="btn btn-success" @click="downloadExcel()">
+                                <button
+                                    type="button"
+                                    class="btn btn-success"
+                                    @click="downloadExcel()"
+                                    v-if="['administrator', 'buyer'].includes(user.role)"
+                                >
                                     <i class="fa fa-download"></i>
                                     {{ t('form.downloadExcel') }}
                                 </button>
@@ -178,6 +183,7 @@
 
 <script>
     import XLSX from 'xlsx';
+    import ApiService from "../services/ApiService";
 
     export default {
         name: 'purchase-request-group-form',
@@ -192,6 +198,10 @@
                 validator: value => {
                     return value === 'purchase' || value === 'purchase-request'
                 }
+            },
+            user: {
+                type: Object,
+                required: true
             },
             modelsNotFound: {
                 type: Array,
@@ -230,6 +240,10 @@
 
         methods: {
             downloadExcel() {
+                if (! this.editData.excel_downloaded) {
+                    ApiService.post(`/buyer/purchase-request/${this.editData.uuid}/mark-excel-downloaded`);
+                }
+
                 const dataToExport = this.formC.products.map(p => {
                     return {
                         number: this.formC.number,
