@@ -25,6 +25,7 @@ class PurchaseRequestController extends Controller
         $purchaseRequests = PurchaseRequestGroup::query()
             ->search($request->search)
             ->my()
+            ->thisWeek()
             ->latest()
             ->with(['seller', 'purchaseRequests.product', 'purchaseMovements'])
             ->paginate()
@@ -61,6 +62,9 @@ class PurchaseRequestController extends Controller
             ->with(['purchaseRequests'])
             ->firstOrCreate([], $request->all())
         ;
+
+        $purchaseRequestGroup->excel_downloaded = false;
+        $purchaseRequestGroup->save();
 
         foreach ($request->purchaseRequests as $current) {
             foreach ($current['products'] as $product) {
