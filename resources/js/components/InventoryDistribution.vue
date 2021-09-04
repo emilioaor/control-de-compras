@@ -6,7 +6,27 @@
             </div>
             <div class="card-body">
 
-                <div v-if="form.productsByModel.length === 0">
+                <div class="row">
+                    <div class="col-sm-6 form-group">
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                name="filter"
+                                class="form-control"
+                                :placeholder="t('form.filter')"
+                                maxlength="30"
+                                v-model="filter"
+                            >
+                            <span class="input-group-btn">
+                                <button class="btn btn-secondary">
+                                    <i class="fa fa-filter"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="productsByModelC.length === 0">
                     <h5>{{ t('form.nothingPendingToProcess') }}</h5>
                 </div>
 
@@ -14,8 +34,7 @@
                     <input type="hidden" :name="'inventory' + inv.product_id" v-validate data-vv-rules="required" v-if="getInventoryAvailable(inv.product_id) < 0">
                 </template>
 
-
-                <div v-for="(model, i) in form.productsByModel">
+                <div v-for="(model, i) in productsByModelC">
                     <table class="table table-bordered table-responsive-sm">
                         <thead>
                         <tr class="bg-header text-white">
@@ -24,7 +43,7 @@
                                 <i class="fa fa-eye-slash" v-else></i>
 
                                 <a class="pointer text-white call-to-click pl-1" @click="model.show = !model.show">
-                                    {{ model.model }} -
+                                    {{ model.brand }} {{ model.model }} -
 
                                     {{ t('form.clickToAssign') }}
                                 </a>
@@ -51,9 +70,13 @@
                                 <td class="py-0 d-flex align-items-center">
                                     <div class="w-100">
                                         <template v-if="product.markAsNotFound">
-                                            <del>{{ product.description }}</del>
+                                            <del>
+                                                {{ product.brand.name }}
+                                                {{ product.description }}
+                                            </del>
                                         </template>
                                         <template v-else>
+                                            {{ product.brand.name }}
                                             {{ product.description }}
                                         </template>
                                     </div>
@@ -323,7 +346,8 @@
                 },
                 loading: null,
                 noteSelected: null,
-                historySelected: null
+                historySelected: null,
+                filter: ''
             }
         },
 
@@ -371,6 +395,7 @@
 
                         productsByModel.push({
                             model: pr.product.model,
+                            brand: pr.product.brand.name,
                             show: false,
                             qty: products.reduce((total, p) => total + p.qty, 0),
                             products: [
@@ -532,6 +557,17 @@
                     })
                 }
             },
+        },
+
+        computed: {
+            productsByModelC() {
+                return this.form.productsByModel.filter(pbm => {
+                    return (
+                        pbm.model.toLowerCase().indexOf(this.filter.toLowerCase()) >= 0 ||
+                        pbm.brand.toLowerCase().indexOf(this.filter.toLowerCase()) >= 0
+                    )
+                });
+            }
         }
     }
 </script>

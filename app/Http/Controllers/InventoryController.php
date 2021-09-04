@@ -35,7 +35,8 @@ class InventoryController extends Controller
         $purchaseRequests = PurchaseRequestGroup::query()
             ->thisWeek()
             ->with([
-                'purchaseRequests.product.sameModel',
+                'purchaseRequests.product.sameModel.brand',
+                'purchaseRequests.product.brand',
                 'purchaseRequests.purchaseRequestHistories',
                 'purchaseMovements',
                 'seller'
