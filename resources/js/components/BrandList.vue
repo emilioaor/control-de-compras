@@ -2,7 +2,7 @@
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <i class="fa fa-list"></i> {{ t('menu.products') }}
+                <i class="fa fa-list"></i> {{ t('menu.brands') }}
             </div>
             <div class="card-body">
                 <table-filter>
@@ -16,23 +16,17 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>{{ t('validation.attributes.code') }}</th>
-                        <th>{{ t('validation.attributes.brand') }}</th>
-                        <th>{{ t('validation.attributes.model') }}</th>
-                        <th>{{ t('validation.attributes.description') }}</th>
+                        <th>{{ t('validation.attributes.name') }}</th>
                         <th>{{ t('validation.attributes.createdAt') }}</th>
                         <th width="5%"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="item in items" :key="item.id">
-                        <td>{{ item.upc }}</td>
-                        <td>{{ item.brand.name }}</td>
-                        <td>{{ item.model }}</td>
-                        <td>{{ item.description }}</td>
+                        <td>{{ item.name }}</td>
                         <td>{{ item.created_at |date(true) }}</td>
                         <td>
-                            <a :href="'/buyer/product/' + item.uuid + '/edit'" class="btn btn-warning">
+                            <a :href="'/buyer/brand/' + item.uuid + '/edit'" class="btn btn-warning">
                                 <i class="fa fa-edit"></i>
                             </a>
                         </td>
@@ -50,7 +44,7 @@
 
 <script>
     export default {
-        name: 'product-list',
+        name: 'brand-list',
         props: {
             items: {
                 type: Array,

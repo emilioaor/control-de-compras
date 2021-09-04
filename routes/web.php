@@ -47,6 +47,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Buyer
         Route::post('product/exists', [\App\Http\Controllers\ProductController::class, 'exists']);
         Route::resource('product', \App\Http\Controllers\ProductController::class);
+        Route::resource('brand', \App\Http\Controllers\BrandController::class);
         Route::resource('purchase', \App\Http\Controllers\PurchaseController::class);
         Route::resource('product-price', \App\Http\Controllers\ProductPriceController::class);
         Route::get('purchase-request', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('buyer.purchase-request.index');

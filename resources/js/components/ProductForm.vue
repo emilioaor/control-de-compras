@@ -12,26 +12,39 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-sm-6 col-md-4 form-group">
+                        <div class="col-sm-6 col-md-4 form-group" v-if="editData">
                             <label>{{ t('validation.attributes.code') }}</label>
                             <input
                                 type="text"
                                 name="upc"
                                 class="form-control"
-                                :class="{'is-invalid': errors.has('upc') || exists}"
                                 v-model="form.upc"
-                                maxlength="20"
+                                disabled
+                            >
+                        </div>
+
+                        <div class="col-sm-6 col-md-4 form-group">
+                            <label>{{ t('validation.attributes.brand') }}</label>
+                            <select
+                                name="brand_id"
+                                id="brand_id"
+                                class="form-control"
+                                :class="{'is-invalid': errors.has('brand_id')}"
+                                v-model="form.brand_id"
                                 v-validate
                                 data-vv-rules="required"
                             >
-                            <span class="invalid-feedback" role="alert" v-if="errors.firstByRule('upc', 'required')">
-                                <strong>
-                                    {{ t('validation.required', {attribute: 'upc'}) }}
-                                </strong>
-                            </span>
+                                <option
+                                    v-for="brand in brands"
+                                    :key="brand.id"
+                                    :value="brand.id"
+                                >{{ brand.name }}</option>
+                            </select>
 
-                            <span class="invalid-feedback" role="alert" v-if="exists">
-                                <strong>{{ t('validation.unique', {attribute: 'upc'}) }}</strong>
+                            <span class="invalid-feedback" role="alert" v-if="errors.firstByRule('brand_id', 'required')">
+                                <strong>
+                                    {{ t('validation.required', {attribute: 'brand'}) }}
+                                </strong>
                             </span>
                         </div>
 
@@ -102,6 +115,10 @@
             editData: {
                 type: Object,
                 required: false
+            },
+            brands: {
+                type: Array,
+                required: false
             }
         },
 
@@ -116,11 +133,11 @@
         data() {
             return {
                 loading: false,
-                exists: false,
                 form: {
                     upc: null,
                     model: null,
-                    description: null
+                    description: null,
+                    brand_id: null
                 }
             }
         },
@@ -128,28 +145,10 @@
         methods: {
 
             validateForm() {
-                return this.$validator.validateAll().then(res => res && this.checkIfProductExists());
-            },
-
-            checkIfProductExists() {
-                this.loading = true;
-
-                ApiService.post('/buyer/product/exists', {upc: this.form.upc})
-                    .then(res => {
-                        if (!res.data.data || (this.editData && this.editData.uuid === res.data.data.uuid)) {
-                            this.sendForm();
-                        } else {
-                            this.exists = true;
-                            this.loading = false;
-                        }
-                    })
-                    .catch(err => {
-                        this.loading = false;
-                    })
+                return this.$validator.validateAll().then(res => res && this.sendForm());
             },
 
             sendForm() {
-
                 const apiService = this.editData ?
                     ApiService.put('/buyer/product/' + this.form.uuid, this.form) :
                     ApiService.post('/buyer/product', this.form)
@@ -165,12 +164,6 @@
                     this.loading = false;
                 })
             },
-        },
-
-        watch: {
-            "form.upc"() {
-                this.exists = false;
-            }
         }
     }
 </script>

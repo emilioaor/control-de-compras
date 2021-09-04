@@ -6,6 +6,8 @@ return [
     'security' => 'Security',
     'addProduct' => 'Add product',
     'products' => 'Products',
+    'addBrand' => 'Add brand',
+    'brands' => 'Brands',
     'addPurchaseRequest' => 'Add order',
     'purchaseRequests' => 'Orders',
     'addPurchase' => 'Add purchase',

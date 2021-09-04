@@ -17,6 +17,14 @@
                             'route' => route('user.index'),
                         ],
                         [
+                            'label' => __('menu.addBrand'),
+                            'route' => route('brand.create'),
+                        ],
+                        [
+                            'label' => __('menu.brands'),
+                            'route' => route('brand.index'),
+                        ],
+                        [
                             'label' => __('menu.addProduct'),
                             'route' => route('product.create'),
                         ],

@@ -46,6 +46,16 @@ class PurchaseGroup extends Model
     }
 
     /**
+     * Booted
+     */
+    public static function booted()
+    {
+        static::registerModelEvent('creating', function ($pg) {
+            $pg->number = $pg->_nextNumber();
+        });
+    }
+
+    /**
      * Buyer
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

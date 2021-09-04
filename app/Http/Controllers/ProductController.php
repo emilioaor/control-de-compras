@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Product;
 use App\Service\AlertService;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ class ProductController extends Controller
             ->search($request->search)
             ->whereNotIn('id', $request->notIn ? explode(',', $request->notIn) : [])
             ->orderBy('description')
+            ->with(['brand'])
             ->paginate()
         ;
 
@@ -37,7 +39,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('product.form');
+        $brands = Brand::query()->orderBy('name')->get();
+
+        return view('product.form', compact('brands'));
     }
 
     /**
@@ -50,6 +54,8 @@ class ProductController extends Controller
     {
         $product = new Product($request->all());
         $product->save();
+
+        AlertService::alertSuccess(__('alert.processSuccessfully'));
 
         return response()->json(['success' => true, 'redirect' => route('product.index')]);
     }
@@ -76,8 +82,9 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::uuid($id)->firstOrFail();
+        $brands = Brand::query()->orderBy('name')->get();
 
-        return view('product.form', compact('product'));
+        return view('product.form', compact('product', 'brands'));
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contract\NumberTrait;
 use App\Contract\SearchTrait;
 use App\Contract\UuidGeneratorTrait;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,10 +16,13 @@ class Product extends Model
     use SoftDeletes;
     use UuidGeneratorTrait;
     use SearchTrait;
+    use NumberTrait;
 
-    protected $fillable = ['upc', 'model', 'description'];
+    protected $fillable = ['upc', 'model', 'description', 'brand_id'];
 
-    protected $search_fields = ['upc', 'model', 'description'];
+    protected $search_fields = ['upc', 'model', 'description', 'brands.name'];
+
+    protected $number_prefix = 'PRO-';
 
     /**
      * Purchase requests
@@ -81,6 +85,34 @@ class Product extends Model
     }
 
     /**
+     * Brand
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    /**
+     * Booted
+     */
+    public static function booted()
+    {
+        static::registerModelEvent('creating', function ($product) {
+            $product->upc = $product->_nextNumber();
+        });
+    }
+
+    /**
+     * Next number
+     */
+    public function nextNumber()
+    {
+
+    }
+
+    /**
      * Scope model
      *
      * @param Builder $query
@@ -94,6 +126,16 @@ class Product extends Model
         }
 
         return $query;
+    }
+
+    public function scopeSearch(Builder $query, ?string $search): Builder
+    {
+        $query
+            ->select(['products.*'])
+            ->join('brands', 'brands.id', '=', 'products.brand_id')
+        ;
+
+        return $this->_search($query, $search);
     }
 
     /**

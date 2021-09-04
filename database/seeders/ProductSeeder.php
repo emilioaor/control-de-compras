@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Brand;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 
@@ -17,16 +18,18 @@ class ProductSeeder extends Seeder
         if (config('app.env') !== 'production') {
 
             $colors = ['BLACK', 'BLUE', 'GREY'];
+            $brand = Brand::query()->first();
 
             for ($x = 1; $x <= 10; $x++) {
 
                 foreach ($colors as $i => $color) {
-
+                    dump('Voy a crear');
                     $product = new Product();
-                    $product->upc = '0000' . $i . $x;
                     $product->model = 'MD' . $x;
                     $product->description = 'MD' . $x . ' ' . $color;
+                    $product->brand_id = $brand->id;
                     $product->save();
+                    dump('Listo');
                 }
             }
         }

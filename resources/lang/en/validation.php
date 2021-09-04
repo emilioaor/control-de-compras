@@ -184,7 +184,8 @@ return [
         'file' => 'File',
         'date' => 'Date',
         'excel' => 'Excel',
-        'customer' => 'Customer'
+        'customer' => 'Customer',
+        'brand' => 'Brand'
     ],
 
 ];
