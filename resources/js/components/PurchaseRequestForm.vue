@@ -87,14 +87,14 @@
                         <thead>
                             <tr>
                                 <template v-if="purchaseType === 'purchase-request'">
-                                    <th width="15%" class="text-center">{{ t('validation.attributes.upc') }}</th>
+                                    <th width="15%" class="text-center">{{ t('validation.attributes.code') }}</th>
                                     <th width="36%">{{ t('validation.attributes.description') }}</th>
                                     <th width="15%" class="text-center">{{ t('validation.attributes.ordered') }}</th>
                                     <th width="8%" class="text-center">{{ t('validation.attributes.important') }}</th>
                                     <th width="26%" class="text-center">{{ t('validation.attributes.note') }}</th>
                                 </template>
                                 <template v-else-if="purchaseType === 'purchase'">
-                                    <th width="25%" class="text-center">{{ t('validation.attributes.upc') }}</th>
+                                    <th width="25%" class="text-center">{{ t('validation.attributes.code') }}</th>
                                     <th width="60%">{{ t('validation.attributes.description') }}</th>
                                     <th width="15%" class="text-center">{{ t('validation.attributes.ordered') }}</th>
                                 </template>

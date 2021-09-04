@@ -13,7 +13,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-6 col-md-4 form-group">
-                            <label>{{ t('validation.attributes.upc') }}</label>
+                            <label>{{ t('validation.attributes.code') }}</label>
                             <input
                                 type="text"
                                 name="upc"

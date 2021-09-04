@@ -16,7 +16,7 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>{{ t('validation.attributes.upc') }}</th>
+                        <th>{{ t('validation.attributes.code') }}</th>
                         <th>{{ t('validation.attributes.model') }}</th>
                         <th>{{ t('validation.attributes.description') }}</th>
                         <th>{{ t('validation.attributes.createdAt') }}</th>

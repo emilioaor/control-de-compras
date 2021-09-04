@@ -15,7 +15,7 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>{{ t('validation.attributes.upc') }}</th>
+                        <th>{{ t('validation.attributes.code') }}</th>
                         <th>{{ t('validation.attributes.product') }}</th>
                         <!--<th class="text-center">{{ t('validation.attributes.ordered') }}</th>-->
                         <th class="text-center">{{ t('validation.attributes.available') }}</th>

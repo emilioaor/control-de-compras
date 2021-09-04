@@ -96,7 +96,7 @@
                                 <table class="table table-responsive">
                                     <thead>
                                         <tr>
-                                            <th>{{ t('validation.attributes.upc') }}</th>
+                                            <th>{{ t('validation.attributes.code') }}</th>
                                             <th>{{ t('validation.attributes.description') }}</th>
                                             <template v-if="purchaseType === 'purchase-request'">
                                                 <th class="text-center">{{ t('validation.attributes.important') }}</th>

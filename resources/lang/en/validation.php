@@ -157,6 +157,7 @@ return [
         'newPassword' => 'New password',
         'newPasswordConfirmation' => 'New password confirmation',
         'upc' => 'UPC',
+        'code' => 'Code',
         'model' => 'Model',
         'description' => 'Description',
         'createdAt' => 'Created at',

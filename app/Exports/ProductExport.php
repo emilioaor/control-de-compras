@@ -33,7 +33,7 @@ class ProductExport implements FromCollection, WithHeadings, ShouldAutoSize, Wit
     public function headings(): array
     {
         return [
-            __('validation.attributes.upc'),
+            __('validation.attributes.code'),
             __('validation.attributes.model'),
             __('validation.attributes.description'),
             __('validation.attributes.price'),
