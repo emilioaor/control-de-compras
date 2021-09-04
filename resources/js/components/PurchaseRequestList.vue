@@ -6,6 +6,24 @@
             </div>
             <div class="card-body">
                 <table-filter>
+                    <template v-slot:filter>
+                        <div class="w-100 pl-2">
+                            <select
+                                name="seller"
+                                id="seller"
+                                class="form-control"
+                                v-model="seller"
+                            >
+                                <option :value="null">{{ t('form.allSellers') }}</option>
+                                <option
+                                    v-for="seller in sellers"
+                                    :key="seller.id"
+                                    :value="seller.id"
+                                >{{ seller.name }}</option>
+                            </select>
+                        </div>
+                    </template>
+
                     <template v-slot:total v-if="total">
                         <div class="text-right">
                             <strong>{{ t('form.total') }}:</strong> {{ total }}
@@ -28,7 +46,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="item in items" :key="item.id">
+                    <tr v-for="item in itemsC" :key="item.id">
                         <td>{{ item.created_at |date(true) }}</td>
                         <td>{{ item.number }}</td>
                         <td>{{ item.purchase_requests.map(pr => pr.product.model).filter((m, i, a) => a.indexOf(m) === i).join(', ') }}</td>
@@ -83,6 +101,22 @@
             user: {
                 type: Object,
                 required: true
+            },
+            sellers: {
+                type: Array,
+                required: true
+            },
+        },
+
+        data() {
+            return {
+                seller: null
+            }
+        },
+
+        computed: {
+            itemsC() {
+                return this.items.filter(item => ! this.seller || this.seller === item.seller.id);
             }
         }
     }

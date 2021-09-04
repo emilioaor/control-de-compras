@@ -1,20 +1,24 @@
 <template>
     <form>
         <div class="row">
-            <div class="col-sm-5 form-group input-group">
-                <input
-                    type="text"
-                    name="search"
-                    class="form-control"
-                    :placeholder="t('form.filter')"
-                    maxlength="30"
-                    v-model="search"
-                >
-                <span class="input-group-btn">
-                    <button class="btn btn-secondary">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </span>
+            <div class="col-sm-5 form-group d-flex">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        :placeholder="t('form.filter')"
+                        maxlength="30"
+                        v-model="search"
+                    >
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+
+                <slot name="filter"></slot>
             </div>
             <div class="col-sm-7 form-group">
                 <slot name="total"></slot>

@@ -46,6 +46,8 @@ Trait WeekTrait {
      */
     public function scopeThisWeek(Builder $query): Builder
     {
-        return $query->whereBetween('created_at', self::weekRange());
+        $table = $this->table ? $this->table . '.' : '';
+
+        return $query->whereBetween("{$table}created_at", self::weekRange());
     }
 }

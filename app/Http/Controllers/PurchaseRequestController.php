@@ -22,16 +22,17 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
+        $sellers = User::query()->sellers()->get();
         $purchaseRequests = PurchaseRequestGroup::query()
             ->search($request->search)
             ->my()
             ->thisWeek()
             ->latest()
             ->with(['seller', 'purchaseRequests.product', 'purchaseMovements'])
-            ->paginate()
+            ->paginate(999)
         ;
 
-        return view('purchaseRequest.index', compact('purchaseRequests'));
+        return view('purchaseRequest.index', compact('purchaseRequests', 'sellers'));
     }
 
     /**

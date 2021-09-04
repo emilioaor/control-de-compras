@@ -155,4 +155,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(PurchaseGroup::class, 'buyer_id');
     }
+
+    /**
+     * Scope sellers
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeSellers(Builder $query)
+    {
+        return $query->where('role', User::ROLE_SELLER);
+    }
 }
