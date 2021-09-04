@@ -39,6 +39,7 @@ return [
     'addNote' => 'Add note',
     'download' => 'Download',
     'downloadFile' => 'Download file',
+    'downloadExcel' => 'Download Excel',
     'loadFile' => 'Load file',
     'pricesByProduct' => 'Prices by product',
     'line' => 'Line',

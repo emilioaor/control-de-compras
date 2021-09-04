@@ -24,6 +24,7 @@
         "vee-validate": "~2.0.4",
         "vue": "^2.5.17",
         "vue-loader": "^15.9.6",
-        "vue-template-compiler": "^2.6.10"
+        "vue-template-compiler": "^2.6.10",
+        "xlsx": "^0.17.1"
     }
 }

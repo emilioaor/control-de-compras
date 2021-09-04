@@ -80,6 +80,13 @@
                                 </div>
                             </div>
 
+                            <div class="col-12 form-group" v-if="editData">
+                                <button type="button" class="btn btn-success" @click="downloadExcel()">
+                                    <i class="fa fa-download"></i>
+                                    {{ t('form.downloadExcel') }}
+                                </button>
+                            </div>
+
                             <div class="col-12 form-group mt-2">
                                 <table class="table table-responsive">
                                     <thead>
@@ -170,6 +177,8 @@
 </template>
 
 <script>
+    import XLSX from 'xlsx';
+
     export default {
         name: 'purchase-request-group-form',
         props: {
@@ -216,6 +225,27 @@
                     processed_at: null,
                     status: null
                 },
+            }
+        },
+
+        methods: {
+            downloadExcel() {
+                const dataToExport = this.formC.products.map(p => {
+                    return {
+                        number: this.formC.number,
+                        seller: this.formC.seller.name,
+                        description: p.description,
+                        ordered: p.ordered,
+                        approved: p.approved,
+                        note: p.note,
+                    }
+                })
+
+                let data = XLSX.utils.json_to_sheet(dataToExport);
+                const workbook = XLSX.utils.book_new();
+                const filename = this.formC.number;
+                XLSX.utils.book_append_sheet(workbook, data, filename);
+                XLSX.writeFile(workbook, `${filename}.xlsx`);
             }
         },
 
