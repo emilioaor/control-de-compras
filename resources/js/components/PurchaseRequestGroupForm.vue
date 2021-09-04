@@ -229,7 +229,7 @@
                         ordered: pr.qty,
                         approved: 0,
                         balance: pr.qty * -1,
-                        markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pr.product.model),
+                        markAsNotFound: this.modelsNotFound.some(mnf => mnf.product_id === pr.product.id),
                         important: pr.important,
                         note: pr.note,
                         inventory: this.inventory.find(i => i.product_id === pr.product.id)?.qty ?? 0
@@ -248,7 +248,7 @@
                             ordered: 0,
                             approved: pm.qty < 0 ? pm.qty * -1 : pm.qty,
                             balance: pm.qty < 0 ? pm.qty * -1 : pm.qty,
-                            markAsNotFound: this.modelsNotFound.some(mnf => mnf.model === pm.product.model),
+                            markAsNotFound: this.modelsNotFound.some(mnf => mnf.product_id === pm.product.id),
                             important: false,
                             note: null,
                             inventory: this.inventory.find(i => i.product_id === pm.product.id)?.qty ?? 0

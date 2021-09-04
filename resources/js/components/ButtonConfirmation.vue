@@ -18,7 +18,7 @@
                     <div class="modal-body d-flex justify-content-center">
 
                         <div class="bg-white p-3 rounded">
-                            <h4 class="text-center confirmation">{{ confirmation }}</h4>
+                            <h4 class="text-center confirmation text-dark">{{ confirmation }}</h4>
 
                             <div class="d-flex justify-content-center mt-3">
 

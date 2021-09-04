@@ -85,7 +85,7 @@ class InventoryController extends Controller
      */
     public function markAsNotFound(Request $request)
     {
-        $modelNotFound = ModelNotFound::query()->where('model', $request->model)->thisWeek()->first();
+        $modelNotFound = ModelNotFound::query()->where('product_id', $request->product_id)->thisWeek()->first();
 
         if ($modelNotFound){
             $modelNotFound->delete();

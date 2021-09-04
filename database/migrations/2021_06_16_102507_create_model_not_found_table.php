@@ -15,7 +15,7 @@ class CreateModelNotFoundTable extends Migration
     {
         Schema::create('models_not_found', function (Blueprint $table) {
             $table->id();
-            $table->string('model', 30)->index();
+            $table->foreignId('product_id')->constrained('products');
             $table->timestamps();
         });
     }

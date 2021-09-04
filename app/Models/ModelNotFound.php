@@ -13,5 +13,15 @@ class ModelNotFound extends Model
 
     protected $table = 'models_not_found';
 
-    protected $fillable = ['model'];
+    protected $fillable = ['product_id'];
+
+    /**
+     * Product
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

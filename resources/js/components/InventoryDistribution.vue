@@ -28,10 +28,6 @@
 
                                     {{ t('form.clickToAssign') }}
                                 </a>
-
-                                <div class="d-inline-block bg-danger rounded p-1 ml-3" v-if="model.markAsNotFound">
-                                    {{ t('form.notFound') }}
-                                </div>
                             </th>
                         </tr>
                         <tr>
@@ -52,7 +48,39 @@
                             v-if="product.hasInventory || product.qty > 0 || getApprovedThisWeekByProduct(product) > 0"
                         >
                             <tr class="tr-title-product">
-                                <td class="py-0">{{ product.upc }} / {{ product.description }}</td>
+                                <td class="py-0 d-flex align-items-center">
+                                    <div class="w-100">
+                                        <template v-if="product.markAsNotFound">
+                                            <del>{{ product.description }}</del>
+                                        </template>
+                                        <template v-else>
+                                            {{ product.description }}
+                                        </template>
+                                    </div>
+
+                                    <div class="w-100 text-right p-1">
+                                        <button-confirmation
+                                            :label="product.markAsNotFound ? t('form.markAsFound') : t('form.markAsNotFound')"
+                                            :btn-class="product.markAsNotFound ? 'btn btn-warning' : 'btn btn-danger'"
+                                            :icon-class="product.markAsNotFound ? '' : 'fa fa-remove'"
+                                            :disabled="loading !== null"
+                                            :confirmation="t('form.notFoundExplanation')"
+                                            :buttons="[
+                                            {
+                                                label: t('form.yes'),
+                                                btnClass: 'btn btn-success',
+                                                code: 'yes'
+                                            },
+                                            {
+                                                label: t('form.no'),
+                                                btnClass: 'btn btn-danger',
+                                                code: 'no'
+                                            }
+                                        ]"
+                                            @confirmed="handleNotFound($event, model, product, i)"
+                                        ></button-confirmation>
+                                    </div>
+                                </td>
                                 <td></td>
                                 <td></td>
                                 <td class="text-center">
@@ -174,7 +202,11 @@
                     </table>
 
                     <div>
-                        <button class="btn btn-info" v-if="! model.show" @click="model.show = true">
+                        <button
+                            class="btn btn-info"
+                            v-if="loading !== i & ! model.show"
+                            @click="model.show = true"
+                        >
                             <i class="fa fa-eye"></i>
                             {{ t('form.clickToAssign') }}
                         </button>
@@ -201,28 +233,6 @@
                                 }
                             ]"
                             @confirmed="handleAssignProducts($event, model, i)"
-                        ></button-confirmation>
-
-                        <button-confirmation
-                            :label="model.markAsNotFound ? t('form.markAsFound') : t('form.markAsNotFound')"
-                            :btn-class="model.markAsNotFound ? 'btn btn-warning' : 'btn btn-danger'"
-                            :icon-class="model.markAsNotFound ? '' : 'fa fa-remove'"
-                            v-if="loading !== i & model.show"
-                            :disabled="loading !== null"
-                            :confirmation="t('form.notFoundExplanation')"
-                            :buttons="[
-                                {
-                                    label: t('form.yes'),
-                                    btnClass: 'btn btn-success',
-                                    code: 'yes'
-                                },
-                                {
-                                    label: t('form.no'),
-                                    btnClass: 'btn btn-danger',
-                                    code: 'no'
-                                }
-                            ]"
-                            @confirmed="handleNotFound($event, model, i)"
                         ></button-confirmation>
                     </div>
 
@@ -361,10 +371,14 @@
                         productsByModel.push({
                             model: pr.product.model,
                             show: false,
-                            markAsNotFound: this.modelsNF.some(mnf => mnf.model === pr.product.model),
                             qty: products.reduce((total, p) => total + p.qty, 0),
                             products: [
-                                ...products
+                                ...products.map(p => {
+                                    return {
+                                        ...p,
+                                        markAsNotFound: this.modelsNF.some(mnf => mnf.product_id === p.id)
+                                    }
+                                })
                             ],
                         });
                     }
@@ -494,22 +508,26 @@
 
             },
 
-            handleNotFound(code, model, index) {
+            handleNotFound(code, model, product, index) {
                 if (code === 'yes') {
                     this.loading = index;
+                    const productId = product.id;
 
                     ApiService.post('/buyer/inventory/not-found', {
-                        model: model.model
+                        product_id: productId
                     }).then(res => {
 
                         if (res.data.success) {
 
-                            const pbm = this.form.productsByModel.find(pbm =>  pbm.model === model.model)
-                            pbm.markAsNotFound = ! pbm.markAsNotFound;
+                            const pbm = this.form.productsByModel.find(pbm =>  pbm.model === model.model);
+                            const product = pbm.products.find(p => p.id === productId);
+
+                            product.markAsNotFound = ! product.markAsNotFound;
                             this.loading = null;
                         }
                     }).catch(err => {
                         this.loading = null;
+                        console.error(err);
                     })
                 }
             },
