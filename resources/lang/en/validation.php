@@ -183,7 +183,8 @@ return [
         'supplier' => 'Supplier',
         'file' => 'File',
         'date' => 'Date',
-        'excel' => 'Excel'
+        'excel' => 'Excel',
+        'customer' => 'Customer'
     ],
 
 ];

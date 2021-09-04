@@ -22,8 +22,8 @@
                 </div>
                 <div class="card-body">
 
-                    <div class="row mb-3" v-if="user.role === 'administrator' && purchaseType === 'purchase-request'">
-                        <div class="col-sm-6 col-md-4 form-group">
+                    <div class="row mb-3" v-if="purchaseType === 'purchase-request'">
+                        <div class="col-sm-6 col-md-4 form-group" v-if="user.role === 'administrator'">
                             <label>{{ t('validation.attributes.seller') }}</label>
 
                             <select
@@ -39,6 +39,24 @@
 
                             <span class="invalid-feedback d-block" role="alert" v-if="errors.has('seller')">
                                 <strong>{{ t('validation.required', {attribute: 'seller'}) }}</strong>
+                            </span>
+                        </div>
+
+                        <div class="col-sm-6 col-md-4 form-group">
+                            <label>{{ t('validation.attributes.customer') }}</label>
+
+                            <input
+                                type="text"
+                                name="customer_name"
+                                class="form-control"
+                                :class="{'is-invalid': errors.has('customer_name')}"
+                                v-model="form.customer_name"
+                                v-validate
+                                data-vv-rules="required"
+                            >
+
+                            <span class="invalid-feedback d-block" role="alert" v-if="errors.has('customer_name')">
+                                <strong>{{ t('validation.required', {attribute: 'customer'}) }}</strong>
                             </span>
                         </div>
                     </div>
@@ -269,6 +287,7 @@
                     buyer_id: null,
                     supplier_id: null,
                     supplier: null,
+                    customer_name: null,
                     purchaseRequests: []
                 }
             }

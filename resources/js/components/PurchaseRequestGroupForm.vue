@@ -38,6 +38,18 @@
                                         readonly
                                     >
                                 </div>
+
+                                <div class="col-sm-6 col-lg-4 form-group">
+                                    <label for="seller">{{ t('validation.attributes.customer') }}</label>
+                                    <input
+                                        type="text"
+                                        id="customer"
+                                        name="customer"
+                                        class="form-control"
+                                        :value="formC.customer_name"
+                                        readonly
+                                    >
+                                </div>
                             </template>
                             <template v-else-if="purchaseType === 'purchase'">
                                 <div class="col-sm-6 col-lg-4 form-group">
@@ -65,7 +77,7 @@
                                 </div>
                             </template>
 
-                            <div class="col-sm-6 col-lg-4 form-group">
+                            <div class="col-sm-6 col-lg-4 form-group" v-if="purchaseType === 'purchase'">
                                 <label>{{ t('validation.attributes.status') }}</label>
                                 <div>
                                     <span
@@ -80,7 +92,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-12 form-group" v-if="editData">
+                            <div class="col-12 form-group" v-if="editData && purchaseType === 'purchase-request'">
                                 <button
                                     type="button"
                                     class="btn btn-success"
@@ -229,6 +241,7 @@
                     seller_id: null,
                     seller: null,
                     buyer: null,
+                    customer_name: null,
                     purchases: [],
                     purchase_requests: [],
                     purchase_movements: [],

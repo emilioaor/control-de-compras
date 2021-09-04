@@ -19,6 +19,7 @@ class CreatePurchaseRequestGroupsTable extends Migration
             $table->string('number', 15)->unique();
             $table->foreignId('seller_id')->constrained('users');
             $table->boolean('excel_downloaded')->default(false);
+            $table->string('customer_name');
             $table->timestamps();
             $table->softDeletes();
         });

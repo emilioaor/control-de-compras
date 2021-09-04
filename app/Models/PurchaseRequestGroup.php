@@ -23,9 +23,9 @@ class PurchaseRequestGroup extends Model
 
     protected $table = 'purchase_request_groups';
 
-    protected $fillable = ['seller_id', 'excel_downloaded'];
+    protected $fillable = ['seller_id', 'excel_downloaded', 'customer_name'];
 
-    protected $search_fields= ['p.model', 'p.description', 'number'];
+    protected $search_fields= ['p.model', 'p.description', 'number', 'customer_name'];
 
     protected $number_prefix = 'ORDEN-';
 
